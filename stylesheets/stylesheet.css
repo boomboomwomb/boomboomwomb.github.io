@@ -24,8 +24,8 @@ img {
 }
 .hero {padding: 0;}
 h3 {
-  font-size:1.4em
-  margin-top:-40px;
+  font-size:1.5em;o
+  line-height:3;
 }
 
 .strong {font-weight:bold;}
@@ -41,7 +41,7 @@ h3 {
 
 .imgDescription {
   position: absolute;
-/* top: 0; */
+/* top: 0; */o
 bottom: 0;
 /* left: 0; */
 /* right: 0; */
