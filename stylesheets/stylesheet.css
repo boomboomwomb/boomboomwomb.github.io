@@ -23,6 +23,11 @@ img {
 h3 {
   font-size:1.4em
 }
+
+.strong {font-weight:bold;}
+.larger {font-size:150%;}
+.indent {margin-left:100px;}
+
 .float-left {float:left;}
 .float-right {float:right;}
 .imgWrap {
@@ -32,11 +37,12 @@ h3 {
 
 .imgDescription {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(29, 106, 154, 0.72);
+/* top: 0; */
+bottom: 0;
+/* left: 0; */
+/* right: 0; */
+background: rgba(244, 117, 255, 0.78);
+padding: 10px;
   color: #fff;
 
 
