@@ -16,7 +16,9 @@ a {
     text-decoration: underline; }
 
 img {
-  float:left;}
+  float:left;
+  padding:10px;
+}
 
 .clear-left {clear:left;}
 .btn {
