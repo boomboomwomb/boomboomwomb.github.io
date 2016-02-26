@@ -7,14 +7,66 @@ body {
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  color: #606c71; }
+  color: #606c71;
+  background-color: #ff8982;
+  background-image: linear-gradient(120deg, #7d06c4 , #ff8982); }
 
 a {
   color: #1e6bb8;
-  text-decoration: none; }
+  text-decoration: underline; }
   a:hover {
     text-decoration: underline; }
 
+img {
+  float:left;
+  padding:10px;
+}
+.bbw {
+  margin-top:-40px;
+}
+.hero {padding: 0;}
+h3 {
+  font-size:1.5em;o
+  line-height:3;
+}
+.50width {width:50%;}
+.strong {font-weight:bold;}
+.larger {font-size:150%;}
+.indent {margin-left:100px;}
+
+.float-left {float:left;}
+.float-right {float:right;}
+.imgWrap {
+  position: relative;
+
+}
+
+.imgDescription {
+  position: absolute;
+/* top: 0; */o
+bottom: 0;
+/* left: 0; */
+/* right: 0; */
+background: rgba(244, 117, 255, 0.78);
+padding: 10px;
+  color: #fff;
+
+
+  visibility: hidden;
+  opacity: 0;
+
+  -webkit-transition: visibility opacity 0.2s;
+}
+
+
+.imgWrap:hover .imgDescription {
+  visibility: visible;
+  opacity: 1;
+}
+
+.clear{
+  clear:both;
+}
 .btn {
   display: inline-block;
   margin-bottom: 1rem;
@@ -56,20 +108,23 @@ a {
 .page-header {
   color: #fff;
   text-align: center;
-  background-color: #159957;
-  background-image: linear-gradient(120deg, #155799, #159957); }
+  background-color: #ff8982;
+  background-image: linear-gradient(120deg, #7d06c4 , #ff8982); }
 
 @media screen and (min-width: 64em) {
   .page-header {
-    padding: 5rem 6rem; } }
+    padding: 5rem 6rem;
+    height:260px; } }
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .page-header {
-    padding: 3rem 4rem; } }
+    padding: 3rem 4rem;
+    height:160px; } }
 
 @media screen and (max-width: 42em) {
   .page-header {
-    padding: 2rem 1rem; } }
+    padding: 2rem 1rem;
+    height:110px; } }
 
 .project-name {
   margin-top: 0;
@@ -104,6 +159,8 @@ a {
   .project-tagline {
     font-size: 1rem; } }
 
+.main-content {background:white;}
+
 .main-content :first-child {
   margin-top: 0; }
 .main-content img {
@@ -112,7 +169,9 @@ a {
   margin-top: 2rem;
   margin-bottom: 1rem;
   font-weight: normal;
-  color: #159957; }
+  color: #7d06c4; }
+
+
 .main-content p {
   margin-bottom: 1em; }
 .main-content code {
@@ -206,7 +265,7 @@ a {
 @media screen and (min-width: 64em) {
   .main-content {
     max-width: 64rem;
-    padding: 2rem 6rem;
+    padding: 2rem 4rem;
     margin: 0 auto;
     font-size: 1.1rem; } }
 
