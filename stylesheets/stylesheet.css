@@ -20,6 +20,7 @@ img {
   padding:10px;
 }
 
+.hero {padding: 0;}
 h3 {
   font-size:1.4em
 }
@@ -108,17 +109,17 @@ padding: 10px;
 @media screen and (min-width: 64em) {
   .page-header {
     padding: 5rem 6rem;
-    height:220px; } }
+    height:280px; } }
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .page-header {
     padding: 3rem 4rem;
-    height:160px; } }
+    height:200px; } }
 
 @media screen and (max-width: 42em) {
   .page-header {
     padding: 2rem 1rem;
-    height:120px; } }
+    height:140px; } }
 
 .project-name {
   margin-top: 0;
