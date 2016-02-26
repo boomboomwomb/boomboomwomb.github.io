@@ -19,12 +19,15 @@ img {
   float:left;
   padding:10px;
 }
+
+h3 {
+  font-size:1.4em
+}
 .float-left {float:left;}
 
 .imgWrap {
   position: relative;
-  height: 200px;
-  width: 257px;
+
 }
 
 .imgDescription {
@@ -153,6 +156,8 @@ img {
   margin-bottom: 1rem;
   font-weight: normal;
   color: #7d06c4; }
+
+
 .main-content p {
   margin-bottom: 1em; }
 .main-content code {
