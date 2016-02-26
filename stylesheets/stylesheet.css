@@ -15,6 +15,9 @@ a {
   a:hover {
     text-decoration: underline; }
 
+img {
+  float:left;}
+
 .btn {
   display: inline-block;
   margin-bottom: 1rem;
