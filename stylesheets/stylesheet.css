@@ -19,10 +19,13 @@ img {
   float:left;
   padding:10px;
 }
-
+.bbw {
+  margin-top:-40px;
+}
 .hero {padding: 0;}
 h3 {
   font-size:1.4em
+  margin-top:-40px;
 }
 
 .strong {font-weight:bold;}
@@ -109,17 +112,17 @@ padding: 10px;
 @media screen and (min-width: 64em) {
   .page-header {
     padding: 5rem 6rem;
-    height:280px; } }
+    height:260px; } }
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .page-header {
     padding: 3rem 4rem;
-    height:200px; } }
+    height:160px; } }
 
 @media screen and (max-width: 42em) {
   .page-header {
     padding: 2rem 1rem;
-    height:140px; } }
+    height:110px; } }
 
 .project-name {
   margin-top: 0;
