@@ -22,7 +22,9 @@ img {
   padding:10px;
 }
 
-.photo-thumbs {width:50px;}
+.photo-thumbs {    width: 150px;
+    padding: 0;
+    margin-bottom: 30px;}
 .bbw {
   margin-top:-40px;
 }
