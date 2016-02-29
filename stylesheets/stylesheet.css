@@ -23,8 +23,8 @@ img {
 }
 
 .photo-thumbs {    width: 150px;
-    padding: 0;
-    margin-bottom: 30px;}
+    padding: 5px;
+    border-radius: 25px;}
 .bbw {
   margin-top:-40px;
 }
