@@ -22,9 +22,12 @@ img {
   padding:10px;
 }
 
-.photo-thumbs {    width: 150px;
+.photo-thumbs {    
+    width: 140px;
     padding: 5px;
-    border-radius: 25px;}
+    border-radius: 25px;
+    max-height: 120px;
+    }
 .bbw {
   margin-top:-40px;
 }
