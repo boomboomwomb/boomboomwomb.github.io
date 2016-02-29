@@ -157,7 +157,11 @@ padding: 10px;
       margin-top: 1rem;
       margin-left: 0; } 
   }
-  .gcal {visibility: hidden;}
+  .gcal {
+    visibility: hidden;
+    width:0;
+    height: 0;
+  }
 
 /*End of Media Queries*/
 
