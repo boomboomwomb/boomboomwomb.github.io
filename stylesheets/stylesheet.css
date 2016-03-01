@@ -47,11 +47,13 @@ img {
 #playa-name {
   text-align: center;
   color:white;
+  margin: 0;
 }
 .wombat {
   position: relative;
   float:left;
   width:150px;
+  min-height: 165px;
   /*border: 1px solid rgba(239, 176, 138, .5);*/
   padding: 0px 8px;
   margin-right: 20px;
@@ -61,6 +63,7 @@ img {
 #role {
   text-align: center;
   color: rgb(49, 49, 49);
+  margin: 5px 10px;
 }
 .bbw {
   margin-top:-40px;
