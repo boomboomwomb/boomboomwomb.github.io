@@ -33,7 +33,12 @@ img {
 }
 
 .burn-count{
-  width:50px;
+  position: relative;
+background-image: url(https://d30y9cdsu7xlg0.cloudfront.net/png/290545-200.png);
+background-size: 50px;
+width: 50px;
+bottom: 50px;
+left: 80px;
 }
 #playa-name {
   text-align: center;
