@@ -29,6 +29,11 @@ img {
     height: 120px;
     }
 .headshot {width:130px;}
+.playa-name {text-align: center;}
+.wombat {
+  float:left;
+  border:1 black solid;
+}
 .bbw {
   margin-top:-40px;
 }
