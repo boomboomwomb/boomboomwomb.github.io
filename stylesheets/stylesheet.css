@@ -28,7 +28,13 @@ img {
     border-radius: 25px;
     height: 120px;
     }
-.headshot {width:130px;}
+.headshot {
+  width:130px;
+}
+
+.burn-count{
+  width:50px;
+}
 #playa-name {
   text-align: center;
   color:white;
