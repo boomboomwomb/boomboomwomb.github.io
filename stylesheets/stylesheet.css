@@ -31,18 +31,20 @@ img {
 .headshot {
   width:130px;
 }
-img .burn-count .0-burns {background-image: url("http://boomboomwomb.com/img/virgin.png");}
-img .burn-count .1-burn  {background-image: url("http://boomboomwomb.com/img/1burn.png");}
-img .burn-count .2-burns {background-image: url("http://boomboomwomb.com/img/2burn.png");}
-img .burn-count .3-burns {background-image: url("http://boomboomwomb.com/img/3burn.png");}
+.burn0 {background-image: url("http://boomboomwomb.com/img/virgin.png");}
+.burn1 {background-image: url("http://boomboomwomb.com/img/1burn.png");}
+.burn2 {background-image: url("http://boomboomwomb.com/img/2burn.png");}
+.burn3 {background-image: url("http://boomboomwomb.com/img/3burn.png");}
 
 .burn-count{
   position: absolute;
-  background-size: 50px;
-  width: 50px;
-  height: 50px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 40px;
+  height: 35px;
   right: 10px;
-  top: 75px;
+  top: 80px;
 }
 #playa-name {
   text-align: center;
