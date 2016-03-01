@@ -32,9 +32,10 @@ img {
 .playa-name {text-align: center;}
 .wombat {
   float:left;
-  border: 1px solid rgba(239, 176, 138, .5);
+  /*border: 1px solid rgba(239, 176, 138, .5);*/
   padding: 0px 8px;
   border-radius: 40px;
+  background: rgba(239, 176, 138, 1);
 }
 .bbw {
   margin-top:-40px;
