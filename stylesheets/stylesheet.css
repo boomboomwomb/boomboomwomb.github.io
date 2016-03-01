@@ -31,10 +31,10 @@ img {
 .headshot {
   width:130px;
 }
-.0-burns {background-image: url("http://boomboomwomb.com/img/virgin.png");}
-.1-burn {background-image: url("http://boomboomwomb.com/img/1burn.png");}
-.2-burns {background-image: url("http://boomboomwomb.com/img/2burn.png");}
-.3-burns {background-image: url("http://boomboomwomb.com/img/3burn.png");}
+.0-burns img{background-image: url("http://boomboomwomb.com/img/virgin.png");}
+.1-burn img{background-image: url("http://boomboomwomb.com/img/1burn.png");}
+.2-burns img{background-image: url("http://boomboomwomb.com/img/2burn.png");}
+.3-burns img{background-image: url("http://boomboomwomb.com/img/3burn.png");}
 
 .burn-count{
   position: absolute;
