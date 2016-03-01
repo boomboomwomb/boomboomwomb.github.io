@@ -41,6 +41,10 @@ img {
   border-radius: 40px;
   background: rgba(239, 176, 138, 1);
 }
+.role{
+  width:150px;
+  height:100px;
+}
 .bbw {
   margin-top:-40px;
 }
