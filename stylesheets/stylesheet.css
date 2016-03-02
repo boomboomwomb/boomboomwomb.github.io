@@ -32,11 +32,11 @@ img {
 .headshot {
   width:130px;
 }
-.burn0 {background-image: url("http://boomboomwomb.com/img/virgin.png");}
-.burn1 {background-image: url("http://boomboomwomb.com/img/1burn.png");}
-.burn2 {background-image: url("http://boomboomwomb.com/img/2burn.png");}
-.burn3 {background-image: url("http://boomboomwomb.com/img/3burn.png");}
-.burn4 {background-image: url("http://boomboomwomb.com/img/4burn.png");}
+.burn0 {background-image: url("http://boomboomwomb.com/img/icons/virgin.png");}
+.burn1 {background-image: url("http://boomboomwomb.com/img/icons/1burn.png");}
+.burn2 {background-image: url("http://boomboomwomb.com/img/icons/2burn.png");}
+.burn3 {background-image: url("http://boomboomwomb.com/img/icons/3burn.png");}
+.burn4 {background-image: url("http://boomboomwomb.com/img/icons/4burn.png");}
 
 
 .burn-count{
@@ -47,6 +47,29 @@ img {
   padding: 18px;
   top: 70px;
 }
+
+.committee{
+  position: absolute;
+  background-size: cover;
+  background-position: center;
+  right: 10px;
+  padding: 18px;
+  top: 70px;
+}
+
+.art-icon {background-image: url("http://boomboomwomb.com/img/icons/art.png");}
+.build-icon {background-image: url("http://boomboomwomb.com/img/icons/build.png");}
+.doulas-icon {background-image: url("http://boomboomwomb.com/img/icons/doulas.png");}
+.events-icon {background-image: url("http://boomboomwomb.com/img/icons/events.png");}
+.food-icon {background-image: url("http://boomboomwomb.com/img/icons/food.png");}
+.interior-icon {background-image: url("http://boomboomwomb.com/img/icons/interior.png");}
+.lnt-icon {background-image: url("http://boomboomwomb.com/img/icons/lnt.png");}
+.planning-icon {background-image: url("http://boomboomwomb.com/img/icons/planning.png");}
+.power-icon {background-image: url("http://boomboomwomb.com/img/icons/power.png");}
+.wellness-icon {background-image: url("http://boomboomwomb.com/img/icons/wellness.png");}
+
+
+
 #playa-name {
   text-align: center;
   color:black;
