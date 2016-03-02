@@ -21,7 +21,10 @@ img {
   float:left;
   padding:10px;
 }
-#children {max-width: 50%;}
+#children {
+  max-width: 50%;
+  border-radius: 50px;
+}
 
 .photo-thumbs {    
     width: 140px;
