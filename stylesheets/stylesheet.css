@@ -50,6 +50,7 @@ img {
   text-align: center;
   color:black;
   margin: 0;
+  font-size: 80%;
 }
 .wombat {
   position: relative;
@@ -66,6 +67,7 @@ img {
   text-align: center;
   color: white;
   margin: 5px 10px;
+  font-size: 75%;
 }
 .bbw {
   margin-top:-40px;
