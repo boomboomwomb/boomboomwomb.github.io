@@ -41,9 +41,10 @@ img {
 
 .burn-count{
   position: absolute;
-  background-size: cover;
+  background-size: 80%;
+  background-repeat: no-repeat;
   background-position: center;
-  right: 10px;
+  left: 10px;
   padding: 18px;
   top: 70px;
 }
@@ -52,7 +53,7 @@ img {
   position: absolute;
   background-size: cover;
   background-position: center;
-  right: 10px;
+  right: 5px;
   padding: 18px;
   top: 70px;
 }
