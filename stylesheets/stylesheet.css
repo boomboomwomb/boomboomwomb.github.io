@@ -51,7 +51,8 @@ img {
   text-align: center;
   color:black;
   margin: 0;
-  font-size: 80%;
+  padding: 0;
+  font-size: 85%;
 }
 .wombat {
   position: relative;
@@ -67,8 +68,9 @@ img {
 #role {
   text-align: center;
   color: white;
-  margin: 5px 10px;
-  font-size: 75%;
+  margin: 0;
+  margin-top:4px;
+  font-size: 76%;
 }
 .bbw {
   margin-top:-40px;
