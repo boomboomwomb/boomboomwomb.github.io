@@ -58,7 +58,7 @@ img {
   min-height: 165px;
   /*border: 1px solid rgba(239, 176, 138, .5);*/
   padding: 0px 8px;
-  margin-right: 20px;
+  margin: 5px;
   border-radius: 40px;
   background: rgba(239, 176, 138, 1);
 }
