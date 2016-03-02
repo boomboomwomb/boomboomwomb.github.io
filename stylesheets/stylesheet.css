@@ -30,7 +30,7 @@ img {
     height: 120px;
     }
 .headshot {
-  width:130px;
+  padding:0px;
 }
 .burn0 {background-image: url("http://boomboomwomb.com/img/icons/virgin.png");}
 .burn1 {background-image: url("http://boomboomwomb.com/img/icons/1burn.png");}
@@ -46,7 +46,7 @@ img {
   background-position: center;
   left: 10px;
   padding: 18px;
-  top: 70px;
+  top: 80px;
 }
 
 .committee{
@@ -55,7 +55,7 @@ img {
   background-position: center;
   right: 5px;
   padding: 18px;
-  top: 70px;
+  top: 80px;
 }
 
 .art-icon {background-image: url("http://boomboomwomb.com/img/icons/art.png");}
@@ -83,17 +83,15 @@ img {
   float:left;
   width:130px;
   height: 185px;
-  /*border: 1px solid rgba(239, 176, 138, .5);*/
   padding: 0px 8px;
   margin: 5px;
-  border-radius: 40px;
+  border-radius: 70px;
   background: rgba(239, 176, 138, 1);
 }
 #role {
   text-align: center;
   color: white;
   margin: 0;
-  margin-top:4px;
   font-size: 76%;
 }
 .bbw {
