@@ -92,6 +92,9 @@ img {
   margin: 5px;
   border-radius: 70px;
   background: rgba(239, 176, 138, 1);
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/74/77/2a/74772a20af8e7255a74beb11312f177c.jpg");
+  background-size: 140%;
+  background-position: -20px;
 }
 #role {
   text-align: center;
