@@ -84,7 +84,7 @@ transition-delay: .3s;
 .food-icon {background-image: url("http://boomboomwomb.com/img/icons/food.png");}
 .interior-icon {background-image: url("http://boomboomwomb.com/img/icons/interior.png");}
 .lnt-icon {background-image: url("http://boomboomwomb.com/img/icons/lnt.png");}
-.planning-icon {background-image: url("http://boomboomwomb.com/img/icons/planning.png");}
+.moms-icon {background-image: url("http://boomboomwomb.com/img/icons/moms.png");}
 .power-icon {background-image: url("http://boomboomwomb.com/img/icons/power.png");}
 .wellness-icon {background-image: url("http://boomboomwomb.com/img/icons/wellness.png");}
 
@@ -114,7 +114,7 @@ transition-delay: .3s;
   text-align: center;
   color: #7E08C4;
   margin: 0;
-  font-size: 76%;
+  font-size: 78%;
 }
 .bbw {
   margin-top:-40px;
