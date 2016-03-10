@@ -35,6 +35,17 @@ img {
 
 .wombat-face {width:200px;}
 
+.headshot2 {
+  opacity: 0;
+position: absolute;
+left: 3px;
+top: -10px;
+}
+
+.headshot2:hover {
+  opacity:1;
+}
+
 .headshot {
   padding:0px;
 }
@@ -92,7 +103,7 @@ img {
   padding: 0px 8px;
   margin: 5px;
   border-radius: 70px;
-  /*background: rgba(239, 176, 138, 1);*/
+/* background: rgba(239, 176, 138, 1); */
   background-image: url("http://boomboomwomb.com/img/baby.png");
   background-size: 140%;
   background-position: -20px;
