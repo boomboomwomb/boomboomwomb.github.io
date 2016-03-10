@@ -34,6 +34,18 @@ img {
     }
 
 .wombat-face {width:200px;}
+
+.headshot2 {
+  visibility: hidden;
+position: absolute;
+left: 3px;
+top: -10px;
+}
+
+img:hover .headshot2 {
+  visibility: normal;
+}
+
 .headshot {
   padding:0px;
 }
