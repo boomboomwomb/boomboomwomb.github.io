@@ -41,7 +41,7 @@ position: absolute;
 left: 3px;
 top: -10px;
 padding: 6px;
-transition-delay: .3s;
+transition: 1s;
 }
 
 .headshot2:hover {
