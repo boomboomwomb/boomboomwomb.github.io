@@ -42,8 +42,8 @@ left: 3px;
 top: -10px;
 }
 
-img:hover .headshot2 {
-  visibility: normal;
+.headshot2:hover{
+  visibility: visible;
 }
 
 .headshot {
