@@ -35,17 +35,6 @@ img {
 
 .wombat-face {width:200px;}
 
-.headshot2 {
-  visibility: hidden;
-position: absolute;
-left: 3px;
-top: -10px;
-}
-
-.headshot2:hover{
-  visibility: visible;
-}
-
 .headshot {
   padding:0px;
 }
