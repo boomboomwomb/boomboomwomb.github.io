@@ -40,6 +40,7 @@ img {
 position: absolute;
 left: 3px;
 top: -10px;
+padding: 0;
 }
 
 .headshot2:hover {
