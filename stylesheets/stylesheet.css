@@ -405,12 +405,12 @@ padding: 10px;
     border: 1px solid #e9ebec; }
 .main-content dl {
   padding: 0; }
-  .main-content dl dt {
+.main-content dl dt {
     padding: 0;
     margin-top: 1rem;
     font-size: 1rem;
     font-weight: bold; }
-  .main-content dl dd {
+.main-content dl dd {
     padding: 0;
     margin-bottom: 1rem; }
 .main-content hr {
@@ -431,3 +431,9 @@ padding: 10px;
 
 .site-footer-credits {
   color: #819198; }
+
+  .spotify {
+    position: fixed;
+    right: 0px;
+    bottom: -20px;
+  }
