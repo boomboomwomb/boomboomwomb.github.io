@@ -191,7 +191,10 @@ h3 {
   position: relative;
 
 }
-
+.tooltip {
+  float:right;
+  width:50px;
+}
 .imgDescription {
   position: absolute;
 /* top: 0; */o
