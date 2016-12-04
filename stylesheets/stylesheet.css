@@ -85,7 +85,11 @@ img {
     height: 120px;
     }
 
-.wombat-face {width:150px;}
+.wombat-face {
+  width: 140px;
+  height: 200px;
+  padding: 0px 10px 75px 10px;
+}
 
 .headshot2 {
   opacity: 0;
