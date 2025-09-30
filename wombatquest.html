@@ -2076,6 +2076,29 @@
         return;
       }
       
+      // B hotkey for shopping (only when at center camps)
+      if (e.key.toLowerCase() === 'b' && !document.querySelector('.encounter-modal') && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        // Check if player is at a center camp
+        let atCenterCamp = false;
+        centerCamps.forEach(camp => {
+          const distance = Math.sqrt(
+            Math.pow(player.worldX + player.w/2 - (camp.x + camp.w/2), 2) + 
+            Math.pow(player.worldY + player.h/2 - (camp.y + camp.h/2), 2)
+          );
+          if (distance < 80) {
+            atCenterCamp = true;
+          }
+        });
+        
+        if (atCenterCamp) {
+          actions.shop();
+        } else {
+          showCollectionFeedback('You need to be at Center Camp to shop!', 'mood', 0);
+        }
+        return;
+      }
+      
       // Spacebar for bike control
       if (e.key === ' ' && !e.repeat) { // Prevent key repeat
         e.preventDefault();
@@ -2696,17 +2719,25 @@
       const locationActionBtn = document.getElementById('location-action-btn');
       
       if (locationActions && locationActionBtn) {
-        // Set the button text and action
+        // Set the button text and action with hotkey labels
         const actionTexts = {
-          'dance': '💃 Dance Here',
-          'climb': '🎨 Climb Art',
-          'orgy': '🏕️ Join Orgy',
-          'chore': '🏠 Do Chores',
-          'shop': '🏛️ Shop at Center Camp'
+          'dance': '💃 Dance Here [D]',
+          'climb': '🎨 Climb Art [C]',
+          'orgy': '🏕️ Join Orgy [O]',
+          'chore': '🏠 Do Chores [H]',
+          'shop': '🏛️ Shop at Center Camp [B]'
         };
         
         locationActionBtn.textContent = actionTexts[actionType] || 'Action';
         locationActionBtn.setAttribute('data-action', actionType);
+        
+        // Ensure the button has proper click handling
+        locationActionBtn.onclick = function() {
+          const action = this.getAttribute('data-action');
+          if (action && actions[action]) {
+            actions[action]();
+          }
+        };
         
         // Show the location actions
         locationActions.style.display = 'block';
