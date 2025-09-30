@@ -1,0 +1,5052 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Wombat Quest - Boom Boom Womb</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="http://boomboomwomb.com/img/favicon.png">
+  <link rel="icon" type="image/x-icon" href="http://boomboomwomb.com/img/favicon.ico" />
+  <style>
+    body { 
+      margin: 0; 
+      padding: 0;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      font-family: 'Arial', sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+    
+    .game-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 1;
+    }
+    
+    h1 {
+      color: #ff6b35;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      margin-bottom: 10px;
+      font-size: 2.5em;
+    }
+    
+    
+    canvas { 
+      background: linear-gradient(45deg, #2c1810, #4a2c1a);
+      border: 3px solid #ff6b35;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+    
+    .controls {
+      margin-top: 15px;
+      color: #ffd23f;
+      font-size: 0.9em;
+    }
+    
+    .stats-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #ff6b35;
+      min-width: 200px;
+      z-index: 100;
+    }
+    
+    .stat-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.9em;
+    }
+    
+    .stat-label {
+      width: 60px;
+      color: #ffd23f;
+      font-weight: bold;
+    }
+    
+    .stat-progress {
+      flex: 1;
+      height: 20px;
+      background: #333;
+      border: 1px solid #555;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0 10px;
+      position: relative;
+    }
+    
+    .stat-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+      border-radius: 10px;
+    }
+    
+    .stat-value {
+      width: 30px;
+      color: #fff;
+      text-align: right;
+      font-size: 0.8em;
+    }
+    
+    .thirst-fill { background: linear-gradient(90deg, #00bfff, #0080ff); }
+    .hunger-fill { background: linear-gradient(90deg, #ff6b35, #ff4500); }
+    .energy-fill { background: linear-gradient(90deg, #ffd23f, #ffed4e); }
+    .mood-fill { background: linear-gradient(90deg, #8b5cf6, #a855f7); }
+    .karma-fill { background: linear-gradient(90deg, #06ffa5, #00ff88); }
+    
+    .coin-display {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 215, 0, 0.2);
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: 1px solid #ffd700;
+      margin-top: 10px;
+    }
+    
+    .karma-display {
+      background: rgba(6, 255, 165, 0.2);
+      border: 1px solid rgba(6, 255, 165, 0.3);
+      margin-top: 8px;
+    }
+    
+    .karma-display .coin-label {
+      color: rgba(6, 255, 165, 0.9);
+    }
+    
+    .karma-display .coin-amount {
+      color: #06ffa5;
+    }
+    
+    .drug-effects-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(139, 92, 246, 0.9);
+      border: 2px solid #a855f7;
+      border-radius: 12px;
+      padding: 12px;
+      color: #fff;
+      font-size: 0.9em;
+      min-width: 200px;
+      display: none;
+    }
+    
+    .drug-effect-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+    }
+    
+    .drug-effect-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .drug-effect-icon {
+      font-size: 1.2em;
+      margin-right: 8px;
+    }
+    
+    .drug-effect-text {
+      flex-grow: 1;
+    }
+    
+    .drug-effect-duration {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+    
+    .collection-feedback {
+      position: relative;
+      background: transparent;
+      color: #fff;
+      padding: 4px 8px;
+      font-size: 1.3em;
+      font-weight: bold;
+      pointer-events: none;
+      animation: slideInFade 3s ease-out forwards;
+      margin-bottom: 8px;
+      transform: translate(-50%, 0);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    @keyframes slideInFade {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -30%);
+      }
+      10% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+      90% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -70%);
+      }
+    }
+    
+    .collection-feedback.karma {
+      color: #06ffa5;
+    }
+    
+    .collection-feedback.coin {
+      color: #ffd700;
+    }
+    
+    .collection-feedback.water {
+      color: #00bfff;
+    }
+    
+    .collection-feedback.food {
+      color: #ffa500;
+    }
+    
+    .collection-feedback.drug {
+      color: #8a2be2;
+    }
+    
+    .collection-feedback.inventory {
+      color: #ff69b4;
+    }
+    
+    .collection-feedback.energy {
+      color: #ff4757;
+    }
+    
+    .collection-feedback.thirst {
+      color: #00bcd4;
+    }
+    
+    .collection-feedback.hunger {
+      color: #ff9800;
+    }
+    
+    .collection-feedback.mood {
+      color: #e91e63;
+    }
+    
+    /* Day Announcement Styles */
+    .day-announcement {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translate(-50%, 0);
+      color: white;
+      padding: 15px 30px;
+      font-size: 1.3em;
+      font-weight: bold;
+      text-align: center;
+      z-index: 2000;
+      animation: announcementSlideIn 0.5s ease-out, announcementPulse 2s ease-in-out infinite;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      max-width: 90%;
+      line-height: 1.3;
+    }
+    
+    @keyframes announcementSlideIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -20px) scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+      }
+    }
+    
+    @keyframes announcementPulse {
+      0%, 100% {
+        transform: translate(-50%, 0) scale(1);
+      }
+      50% {
+        transform: translate(-50%, 0) scale(1.05);
+      }
+    }
+    
+    .drug-countdown-overlay {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(138, 43, 226, 0.9);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 1.5em;
+      font-weight: bold;
+      z-index: 999;
+      pointer-events: none;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      border: 2px solid #fff;
+      box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.05); }
+    }
+
+    /* Intro Screen Styles */
+    .intro-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ff6b35, #f7931e, #ffd23f, #06ffa5, #8b5cf6);
+      background-size: 400% 400%;
+      animation: gradientShift 8s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .intro-content {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      max-width: 800px;
+      max-height: 80vh;
+      overflow-y: auto;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border: 3px solid #ff6b35;
+    }
+    
+    .intro-content h1 {
+      color: #ff6b35;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .intro-text {
+      text-align: left;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      color: #000000;
+    }
+    
+    .intro-text p {
+      margin: 10px 0;
+      font-size: 1.1em;
+      color: #000000;
+    }
+    
+    .intro-section {
+      background: rgba(255, 107, 53, 0.1);
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 10px;
+      border-left: 5px solid #ff6b35;
+      color: #000000;
+    }
+    
+    .intro-section h3 {
+      color: #ff6b35;
+      margin-top: 0;
+      font-size: 1.3em;
+    }
+    
+    .intro-section p {
+      margin: 8px 0;
+      color: #000000;
+    }
+    
+    .start-btn {
+      background: linear-gradient(45deg, #ff6b35, #f7931e);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.3em;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+      background: linear-gradient(45deg, #f7931e, #ffd23f);
+    }
+    
+    .coin-icon {
+      font-size: 1.2em;
+    }
+    
+    .coin-label {
+      font-size: 0.8em;
+      color: #eae9ff;
+      font-weight: 500;
+      margin-left: 8px;
+      flex-grow: 1;
+    }
+    
+    .coin-amount {
+      color: #ffd700;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    
+    .actions-panel {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #ff6b35;
+      max-width: 300px;
+      z-index: 100;
+    }
+    
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .action-btn {
+      background: #1c1c28;
+      color: #eae9ff;
+      border: 1px solid #2a2a3d;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.8em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      min-height: 44px;
+      min-width: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .action-btn:hover {
+      background: #232334;
+      border-color: #ff6b35;
+    }
+    
+    .action-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .top-info-panel {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 2px solid #ff6b35;
+      z-index: 100;
+      text-align: center;
+    }
+    
+    .time-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    
+    .time-display {
+      color: #ffd23f;
+      font-size: 1.1em;
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    .pause-btn {
+      background: rgba(255, 107, 53, 0.8);
+      border: 2px solid #ff6b35;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    
+    .pause-icon {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .pause-bar {
+      width: 3px;
+      height: 12px;
+      background: white;
+      border-radius: 1px;
+    }
+    
+    .pause-btn:hover {
+      background: #ff6b35;
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(255, 107, 53, 0.6);
+    }
+    
+    .pause-btn.paused {
+      background: rgba(255, 0, 0, 0.8);
+      border-color: #ff0000;
+    }
+    
+    .pause-btn.paused:hover {
+      background: #ff0000;
+    }
+    
+    .activities-display {
+      color: #ffd23f;
+      font-size: 0.9em;
+      line-height: 1.3;
+    }
+    
+    .activities-display p {
+      margin: 2px 0;
+      font-size: 0.85em;
+    }
+    
+    .inventory-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #8b5cf6;
+      min-width: 150px;
+      z-index: 100;
+    }
+    
+    .inventory-title {
+      color: #8b5cf6;
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+    }
+    
+    .inventory-item {
+      background: rgba(139, 92, 246, 0.2);
+      padding: 3px 8px;
+      margin: 2px 0;
+      border-radius: 12px;
+      font-size: 0.8em;
+      border: 1px solid #8b5cf6;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .inventory-item:hover {
+      background: rgba(139, 92, 246, 0.4);
+      border-color: #a855f7;
+      transform: scale(1.05);
+    }
+    
+    .inventory-item .quantity {
+      background: rgba(255, 255, 255, 0.3);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 0.7em;
+      font-weight: bold;
+      min-width: 16px;
+      text-align: center;
+    }
+    
+    .encounter-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.95);
+      padding: 20px;
+      border-radius: 15px;
+      border: 3px solid #ff6b35;
+      max-width: 500px;
+      z-index: 1000;
+      text-align: center;
+    }
+    
+    .stat-changes {
+      font-size: 0.9em;
+      margin: 10px 0;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffd700;
+      font-weight: bold;
+    }
+    
+    .encounter-text {
+      color: #eae9ff;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+      line-height: 1.4;
+    }
+    
+    .encounter-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .choice-btn {
+      background: #1c1c28;
+      color: #eae9ff;
+      border: 1px solid #2a2a3d;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.2s ease;
+    }
+    
+    .choice-btn:hover {
+      background: #232334;
+      border-color: #ff6b35;
+    }
+    
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(255, 107, 53, 0.8); }
+      100% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.4); }
+    }
+    
+    canvas {
+      animation: pulse 2s infinite;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="top-info-panel">
+    <div class="time-controls">
+      <div class="time-display" id="time-display">Day 1 • 08:00</div>
+        <button class="pause-btn" id="pause-btn">
+          <div class="pause-icon">
+            <div class="pause-bar"></div>
+            <div class="pause-bar"></div>
+          </div>
+        </button>
+    </div>
+    <div class="activities-display" id="activities-display">
+      <p>Welcome to Burning Man! The playa is starting to fill up...</p>
+    </div>
+  </div>
+  
+  <div class="inventory-panel">
+    <div class="inventory-title">🎒 Inventory</div>
+    <div id="inventory-list">
+      <!-- Inventory starts empty -->
+    </div>
+  </div>
+  
+  <div class="drug-effects-panel" id="drug-effects-panel">
+    <div style="font-weight: bold; margin-bottom: 8px; color: #ffd700;">💊 Active Effects</div>
+    <div id="drug-effects-list">
+      <!-- Drug effects will be populated here -->
+    </div>
+  </div>
+  
+  <div class="drug-countdown-overlay" id="drug-countdown-overlay" style="display: none;">
+    <div id="countdown-text">Drug Effects: 10s</div>
+  </div>
+  
+  <!-- Intro Screen -->
+  <div id="intro-screen" class="intro-screen">
+    <div class="intro-content">
+      <h1>🏜️ Welcome to Burning Man! 🏜️</h1>
+      <div class="intro-text">
+        <p><strong>You are a wombat exploring the playa!</strong></p>
+        <p>Your goal is to collect the most <strong>Wombat Coins</strong> and <strong>Karma</strong> during your 10-day Burning Man adventure.</p>
+        
+        <div class="intro-section">
+          <h3>🎮 How to Play:</h3>
+          <p>• Use <strong>Arrow Keys</strong> to move around</p>
+          <p>• Press <strong>Space</strong> to get on/off bikes</p>
+          <p>• Press any key to wake up from naps</p>
+          <p>• Collect coins, water, food, and other items scattered across the playa</p>
+          <p>• Pick up MOOP (trash) for karma points</p>
+          <p>• Find art cars and bikes for faster transportation</p>
+          <p>• Visit special locations like dance floors, art installations, and orgy domes</p>
+          <p>• Use items from your inventory or give them as gifts</p>
+          <p>• <strong>Keep your stat bars (Energy, Thirst, Hunger, Mood) high for top speed!</strong></p>
+        </div>
+        
+        <div class="intro-section">
+          <h3>🔥 The Timeline:</h3>
+          <p>• <strong>Day 7 (Saturday):</strong> The Man burns!</p>
+          <p>• <strong>Day 8 (Sunday):</strong> The Temple burns! Everything starts disappearing!</p>
+          <p>• <strong>Day 11:</strong> The game ends!</p>
+          <p>The playa starts empty but fills up as time goes on!</p>
+        </div>
+        
+        <div class="intro-section">
+          <h3>💊 Special Items:</h3>
+          <p>• <strong>Drugs:</strong> Give speed boosts or slow you down, some cause hallucinations</p>
+          <p>• <strong>Art Cars:</strong> Large vehicles you can ride around on</p>
+          <p>• <strong>Bikes:</strong> Give you a 1.5x speed boost</p>
+          <p>• <strong>MOOP:</strong> Trash items that give karma when collected</p>
+        </div>
+      </div>
+      <button id="start-game-btn" class="start-btn">Start Your Burning Man Journey! 🔥</button>
+    </div>
+  </div>
+
+  <div class="game-container" id="game-container" style="display: none;">
+    <h1>🐾 Wombat Quest</h1>
+    <canvas id="game" width="600" height="400"></canvas>
+    <p class="controls">Use Arrow Keys to move • Space to get on/off bikes • Press any key to wake up from naps</p>
+  </div>
+  
+  <div class="actions-panel">
+    <div class="action-grid">
+      <button class="action-btn" data-action="explore">Explore</button>
+      <button class="action-btn" data-action="gift">Give Gift [G]</button>
+      <button class="action-btn" data-action="rest">Rest (nap) [R]</button>
+      <button class="action-btn" data-action="help">Help Stranger</button>
+      <button class="action-btn" data-action="battle">Silly Battle</button>
+      <button class="action-btn" data-action="meditate">Meditate</button>
+      <button class="action-btn" data-action="climb">Climb Art [C]</button>
+    </div>
+    <div class="action-grid" id="transport-actions" style="display: none;">
+      <button class="action-btn" id="board-btn" data-action="board">Board Vehicle</button>
+      <button class="action-btn" id="dismount-btn" data-action="dismount">Dismount Vehicle</button>
+    </div>
+    <div class="action-grid" id="location-actions" style="display: none;">
+      <button class="action-btn" id="location-action-btn" data-action="">Location Action</button>
+    </div>
+  </div>
+  
+  <div class="stats-panel">
+    <div class="stat-bar">
+      <div class="stat-label">💧 Thirst</div>
+      <div class="stat-progress">
+        <div class="stat-fill thirst-fill" id="thirst-bar"></div>
+      </div>
+      <div class="stat-value" id="thirst-value">100</div>
+    </div>
+    <div class="stat-bar">
+      <div class="stat-label">🍕 Hunger</div>
+      <div class="stat-progress">
+        <div class="stat-fill hunger-fill" id="hunger-bar"></div>
+      </div>
+      <div class="stat-value" id="hunger-value">100</div>
+    </div>
+    <div class="stat-bar">
+      <div class="stat-label">⚡ Energy</div>
+      <div class="stat-progress">
+        <div class="stat-fill energy-fill" id="energy-bar"></div>
+      </div>
+      <div class="stat-value" id="energy-value">100</div>
+    </div>
+    <div class="stat-bar">
+      <div class="stat-label">😊 Mood</div>
+      <div class="stat-progress">
+        <div class="stat-fill mood-fill" id="mood-bar"></div>
+      </div>
+      <div class="stat-value" id="mood-value">100</div>
+    </div>
+    <div class="coin-display">
+      <div class="coin-icon">🪙</div>
+      <div class="coin-label">Coins</div>
+      <div class="coin-amount" id="coin-amount">0</div>
+    </div>
+    <div class="coin-display karma-display">
+      <div class="coin-icon">✨</div>
+      <div class="coin-label">Karma</div>
+      <div class="coin-amount" id="karma-amount">0</div>
+    </div>
+    <div class="coin-display">
+      <div class="coin-icon">⚡</div>
+      <div class="coin-label">Speed</div>
+      <div class="coin-amount" id="speed-display">🚶 1.0x</div>
+    </div>
+    <div class="coin-display">
+      <div class="coin-icon">⏰</div>
+      <div class="coin-label">Time</div>
+      <div class="coin-amount" id="time-perception-display">⏰ 1.0x</div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    
+    // Set canvas to full window size
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      // Player is always centered on screen
+      player.screenX = canvas.width / 2 - player.w / 2;
+      player.screenY = canvas.height / 2 - player.h / 2;
+      // Update camera to keep player centered
+      camera.x = player.worldX - player.screenX;
+      camera.y = player.worldY - player.screenY;
+    }
+    
+    window.addEventListener('resize', resizeCanvas);
+
+    // Camera system - keeps player centered
+    const camera = {
+      x: 0,
+      y: 0
+    };
+    
+    // Player world position (not screen position)
+    const player = {
+      worldX: 0, worldY: 0, // Player's position in the world
+      screenX: 0, screenY: 0, // Player's position on screen (always center)
+      w: 32, h: 32,
+      speed: 6,
+      color: "#ff6b35",
+      stats: {
+        coin: 0,
+        karma: 0,
+        hunger: 70,
+        thirst: 70,
+        energy: 70,
+        mood: 70
+      },
+      inventory: { },
+      flags: { storm: false, goggles: false },
+      time: { day: 1, hour: 8, minute: 0 },
+      drugEffects: {
+        activeDrugs: [],  // Array of active drugs with their effects and durations
+        timeMultiplier: 1.0,
+        timeStopDuration: 0,
+        timeAccumulator: 0
+      },
+      sleeping: false,
+      sleepStartTime: 0,
+      cooldowns: {
+        dance: 0,
+        climb: 0,
+        orgy: 0,
+        chore: 0,
+        shop: 0
+      }
+    };
+    
+    // Game state
+    const gameState = {
+      ended: false,
+      finalScore: { coins: 0, karma: 0 }
+    };
+    
+    // Game ending functions
+    function endGame() {
+      if (gameState.ended) return; // Prevent multiple endings
+      
+      gameState.ended = true;
+      gameState.finalScore = { 
+        coins: player.stats.coin, 
+        karma: player.stats.karma 
+      };
+      
+      // Create game over screen
+      const gameOverScreen = document.createElement('div');
+      gameOverScreen.id = 'game-over-screen';
+      gameOverScreen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+        color: white;
+        font-family: Arial, sans-serif;
+      `;
+      
+      gameOverScreen.innerHTML = `
+        <div style="text-align: center; max-width: 600px; padding: 40px;">
+          <h1 style="color: #ff6b35; font-size: 3em; margin-bottom: 20px;">🔥 Burning Man Complete! 🔥</h1>
+          <div style="background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 15px; margin: 20px 0;">
+            <h2 style="color: #ffd23f; margin-bottom: 20px;">Your Final Score:</h2>
+            <div style="font-size: 1.5em; margin: 10px 0;">
+              <div style="color: #ffd23f;">💰 Coins: ${gameState.finalScore.coins}</div>
+              <div style="color: #06ffa5;">🌟 Karma: ${Math.round(gameState.finalScore.karma)}</div>
+            </div>
+            <div style="margin-top: 20px; font-size: 1.2em;">
+              <p>You survived ${player.time.day - 1} days on the playa!</p>
+              <p>The Man and Temple have burned, and the temporary city has returned to dust.</p>
+              <p>Thank you for being part of the Burning Man experience!</p>
+            </div>
+          </div>
+          <button id="restart-btn" style="
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+          ">Play Again 🔥</button>
+        </div>
+      `;
+      
+      document.body.appendChild(gameOverScreen);
+      
+      // Add restart functionality
+      const restartBtn = document.getElementById('restart-btn');
+      restartBtn.addEventListener('click', restartGame);
+    }
+    
+    function restartGame() {
+      // Remove game over screen
+      const gameOverScreen = document.getElementById('game-over-screen');
+      if (gameOverScreen) {
+        gameOverScreen.remove();
+      }
+      
+      // Reset game state
+      gameState.ended = false;
+      gameState.finalScore = { coins: 0, karma: 0 };
+      
+      // Reset player
+      player.worldX = 0;
+      player.worldY = 0;
+      player.stats.coin = 0;
+      player.stats.karma = 0;
+      player.stats.hunger = 70;
+      player.stats.thirst = 70;
+      player.stats.energy = 70;
+      player.stats.mood = 70;
+      player.inventory = {};
+      player.time = { day: 1, hour: 8, minute: 0 };
+      player.drugEffects.activeDrugs = [];
+      player.drugEffects.timeMultiplier = 1.0;
+      player.drugEffects.timeStopDuration = 0;
+      player.drugEffects.timeAccumulator = 0;
+      player.sleeping = false;
+      player.sleepStartTime = 0;
+      player.cooldowns = {
+        dance: 0,
+        climb: 0,
+        orgy: 0,
+        chore: 0,
+        shop: 0
+      };
+      
+      // Reset riding states
+      ridingArtCar = null;
+      ridingBike = null;
+      lastExitTime = 0;
+      
+      // Clear all world content
+      decorations.length = 0;
+      coins.length = 0;
+      waterBottles.length = 0;
+      snacks.length = 0;
+      bikes.length = 0;
+      artCars.length = 0;
+      moop.length = 0;
+      drugs.length = 0;
+      danceFloors.length = 0;
+      artInstallations.length = 0;
+      orgyDomes.length = 0;
+      homeCamps.length = 0;
+      centerCamps.length = 0;
+      
+      // Reset world generation
+      generatedChunks.clear();
+      worldPopulationMultiplier = 0.1;
+      lastAnnouncedDay = 0;
+      lastTimeUpdate = Date.now();
+      
+      // Reset camera
+      camera.x = 0;
+      camera.y = 0;
+      
+      // Reset Man and Temple structures
+      manStructure.burned = false;
+      manStructure.limbs = 0;
+      manStructure.constructionProgress = 0;
+      
+      templeStructure.burned = false;
+      templeStructure.constructionProgress = 0;
+      
+      // Update displays
+      updateStatsDisplay();
+      updateTimeDisplay();
+      updateInventoryDisplay();
+      updateDrugEffectsDisplay();
+      updateTransportButtons();
+      
+      // Generate initial world content
+      generateWorldContent();
+      
+      // Restart the game loop
+      loop();
+    }
+
+    const keys = {};
+
+    // Add some Burning Man themed decorations and collectibles
+    const decorations = [];
+    
+    // Add collectible coins
+    const coins = [];
+    
+    // Add collectible water bottles and snacks
+    const waterBottles = [];
+    const snacks = [];
+    
+    // Art cars that wander around
+    const artCars = [];
+    
+    // Bikes that can be ridden
+    const bikes = [];
+    
+    // MOOP (Matter Out Of Place) items for karma
+    const moop = [];
+    
+    // Drugs with various effects
+    const drugs = [];
+    
+    // Special locations for actions
+    const danceFloors = [];
+    const artInstallations = [];
+    const orgyDomes = [];
+    const homeCamps = [];
+    const centerCamps = [];
+    
+    // Handle items disappearing after Burning Man
+    function handlePostBurnDisappearing() {
+      const currentDay = player.time.day;
+      
+      // Only run disappearing logic once per day
+      if (currentDay === lastDisappearingDay) {
+        return;
+      }
+      
+      // Day 8-10: Things start disappearing gradually (Sunday onwards)
+      if (currentDay >= 8 && currentDay <= 10) {
+        lastDisappearingDay = currentDay;
+        const disappearingChance = (currentDay - 7) * 0.1; // 10% on day 8, 20% on day 9, 30% on day 10
+        
+        // Count items before removal for feedback
+        const coinsBefore = coins.length;
+        const waterBefore = waterBottles.length;
+        const snacksBefore = snacks.length;
+        const moopBefore = moop.length;
+        const drugsBefore = drugs.length;
+        const bikesBefore = bikes.length;
+        
+        // Remove coins (mutate in place)
+        coins.splice(0, coins.length, ...coins.filter(coin => Math.random() > disappearingChance));
+        
+        // Remove water bottles (mutate in place)
+        waterBottles.splice(0, waterBottles.length, ...waterBottles.filter(water => Math.random() > disappearingChance));
+        
+        // Remove snacks (mutate in place)
+        snacks.splice(0, snacks.length, ...snacks.filter(snack => Math.random() > disappearingChance));
+        
+        // Remove MOOP (mutate in place)
+        moop.splice(0, moop.length, ...moop.filter(moopItem => Math.random() > disappearingChance));
+        
+        // Remove drugs (mutate in place)
+        drugs.splice(0, drugs.length, ...drugs.filter(drug => Math.random() > disappearingChance));
+        
+        // Remove bikes (mutate in place)
+        bikes.splice(0, bikes.length, ...bikes.filter(bike => Math.random() > disappearingChance));
+        
+        // Remove special locations (mutate in place)
+        danceFloors.splice(0, danceFloors.length, ...danceFloors.filter(location => Math.random() > disappearingChance));
+        artInstallations.splice(0, artInstallations.length, ...artInstallations.filter(location => Math.random() > disappearingChance));
+        orgyDomes.splice(0, orgyDomes.length, ...orgyDomes.filter(location => Math.random() > disappearingChance));
+        homeCamps.splice(0, homeCamps.length, ...homeCamps.filter(location => Math.random() > disappearingChance));
+        centerCamps.splice(0, centerCamps.length, ...centerCamps.filter(location => Math.random() > disappearingChance));
+        
+        // Show feedback for disappearing items
+        const totalDisappeared = (coinsBefore - coins.length) + (waterBefore - waterBottles.length) + 
+                                (snacksBefore - snacks.length) + (moopBefore - moop.length) + 
+                                (drugsBefore - drugs.length) + (bikesBefore - bikes.length);
+        
+        if (totalDisappeared > 0 && Math.random() < 0.3) { // 30% chance to show feedback
+          showCollectionFeedback(`${totalDisappeared} items disappeared as people leave...`, 'mood', 0);
+        }
+      }
+      
+      // Day 11+: Everything disappears completely
+      if (currentDay >= 11) {
+        const hadItems = coins.length > 0 || waterBottles.length > 0 || snacks.length > 0 || 
+                        moop.length > 0 || drugs.length > 0 || bikes.length > 0 || artCars.length > 0;
+        
+        // Clear arrays in place to avoid reassigning consts
+        coins.length = 0;
+        waterBottles.length = 0;
+        snacks.length = 0;
+        moop.length = 0;
+        drugs.length = 0;
+        bikes.length = 0;
+        danceFloors.length = 0;
+        artInstallations.length = 0;
+        orgyDomes.length = 0;
+        homeCamps.length = 0;
+        centerCamps.length = 0;
+        
+        // Art cars also leave
+        artCars = [];
+        
+        // Show feedback if there were items to remove
+        if (hadItems) {
+          showCollectionFeedback('Everything has been packed away... The playa is empty.', 'mood', 0);
+        }
+      }
+    }
+    
+    // Update Man and Temple construction progress
+    function updateStructures() {
+      const currentDay = player.time.day;
+      
+      // Update Man construction (grows limbs each day until day 8)
+      if (currentDay <= MAN_BURN_DAY) {
+        const targetLimbs = Math.min(currentDay, manStructure.maxLimbs);
+        manStructure.limbs = targetLimbs;
+        manStructure.constructionProgress = (targetLimbs / manStructure.maxLimbs) * 100;
+      }
+      
+      // Man burns on day 8 (only once)
+      if (currentDay === MAN_BURN_DAY && player.time.hour === 0 && !manStructure.burned) {
+        manStructure.burned = true;
+        console.log('🔥 THE MAN BURNS! 🔥');
+      }
+      
+      // Update Temple construction (builds gradually from day 1 to day 10)
+      if (currentDay <= TEMPLE_BURN_DAY) {
+        templeStructure.constructionProgress = (currentDay / TEMPLE_BURN_DAY) * 100;
+      }
+      
+      // Temple burns on day 10 (only once)
+      if (currentDay === TEMPLE_BURN_DAY && player.time.hour === 0 && !templeStructure.burned) {
+        templeStructure.burned = true;
+        console.log('🔥 THE TEMPLE BURNS! 🔥');
+      }
+    }
+
+    // Helper function to check if a position is within playa boundaries
+    function isWithinBoundaries(x, y) {
+      const distanceFromCenter = Math.sqrt(x * x + y * y);
+      return distanceFromCenter <= PLAYA_RADIUS;
+    }
+
+    // Generate world content around player position
+    function generateWorldContent() {
+      // Generate center camp first (only once)
+      generateCenterCamp();
+      
+      const worldSize = 2000; // World extends 1000 pixels in each direction from center
+      const chunkSize = 400; // Generate content in 400x400 chunks
+      
+      // Calculate current chunk
+      const chunkX = Math.floor(player.worldX / chunkSize);
+      const chunkY = Math.floor(player.worldY / chunkSize);
+      
+      // Generate content for current chunk and surrounding chunks
+      for (let x = chunkX - 1; x <= chunkX + 1; x++) {
+        for (let y = chunkY - 1; y <= chunkY + 1; y++) {
+          const chunkId = `${x},${y}`;
+          
+          // Skip if already generated
+          if (generatedChunks.has(chunkId)) continue;
+          
+          // Check if chunk is within playa boundaries
+          const chunkStartX = x * chunkSize;
+          const chunkStartY = y * chunkSize;
+          const chunkCenterX = chunkStartX + chunkSize / 2;
+          const chunkCenterY = chunkStartY + chunkSize / 2;
+          const distanceFromCenter = Math.sqrt(chunkCenterX * chunkCenterX + chunkCenterY * chunkCenterY);
+          
+          // Skip chunks outside the playa - check if chunk corners are within boundary
+          const chunkCornerDistance = Math.sqrt(
+            Math.pow(Math.max(Math.abs(chunkStartX), Math.abs(chunkStartX + chunkSize)), 2) +
+            Math.pow(Math.max(Math.abs(chunkStartY), Math.abs(chunkStartY + chunkSize)), 2)
+          );
+          
+          // Skip chunks if any corner would be outside the boundary
+          if (chunkCornerDistance > PLAYA_RADIUS) continue;
+          
+          generatedChunks.add(chunkId);
+          
+          // Generate content for this chunk
+          
+          // Generate decorations (scaled by population)
+          const decorationCount = Math.floor((Math.random() * 3 + 1) * worldPopulationMultiplier);
+          for (let i = 0; i < decorationCount; i++) {
+            const x = chunkStartX + Math.random() * chunkSize;
+            const y = chunkStartY + Math.random() * chunkSize;
+            
+            // Only add if within boundaries
+            if (isWithinBoundaries(x, y)) {
+              decorations.push({
+                x: x,
+                y: y,
+                w: Math.random() * 20 + 10,
+                h: Math.random() * 20 + 10,
+                color: ["#ffd23f", "#ff6b35", "#8b5cf6", "#06ffa5"][Math.floor(Math.random() * 4)],
+                type: ["art", "temple", "camp"][Math.floor(Math.random() * 3)],
+                chunkId: chunkId
+              });
+            }
+          }
+          
+          // Generate coins (scaled by population)
+          const coinCount = Math.floor((Math.random() * 20 + 13) * worldPopulationMultiplier);
+          for (let i = 0; i < coinCount; i++) {
+            const x = chunkStartX + Math.random() * chunkSize;
+            const y = chunkStartY + Math.random() * chunkSize;
+            
+            // Only add if within boundaries
+            if (isWithinBoundaries(x, y)) {
+              coins.push({
+                x: x,
+                y: y,
+                w: 8, h: 8, collected: false, chunkId: chunkId
+              });
+            }
+          }
+          
+          // Generate water bottles (scaled by population)
+          const waterCount = Math.floor((Math.random() * 5 + 3) * worldPopulationMultiplier);
+          for (let i = 0; i < waterCount; i++) {
+            const x = chunkStartX + Math.random() * chunkSize;
+            const y = chunkStartY + Math.random() * chunkSize;
+            
+            // Only add if within boundaries
+            if (isWithinBoundaries(x, y)) {
+              waterBottles.push({
+                x: x,
+                y: y,
+                w: 12, h: 16, collected: false, chunkId: chunkId
+              });
+            }
+          }
+          
+          // Generate snacks (scaled by population) - different food types
+          const foodTypes = [
+            { name: 'Grilled Cheese', hunger: 25, color: '#FFD700', emoji: '🧀' },
+            { name: 'Veggie Burger', hunger: 35, color: '#8B4513', emoji: '🍔' },
+            { name: 'Fruit Salad', hunger: 20, color: '#FF69B4', emoji: '🥗' },
+            { name: 'Energy Bar', hunger: 15, color: '#8B4513', emoji: '🍫' },
+            { name: 'Pizza Slice', hunger: 30, color: '#FF6347', emoji: '🍕' },
+            { name: 'Smoothie', hunger: 18, color: '#32CD32', emoji: '🥤' }
+          ];
+          
+          const snackCount = Math.floor((Math.random() * 4 + 2) * worldPopulationMultiplier);
+          for (let i = 0; i < snackCount; i++) {
+            const foodType = foodTypes[Math.floor(Math.random() * foodTypes.length)];
+            const x = chunkStartX + Math.random() * chunkSize;
+            const y = chunkStartY + Math.random() * chunkSize;
+            
+            // Only add if within boundaries
+            if (isWithinBoundaries(x, y)) {
+              snacks.push({
+                x: x,
+                y: y,
+                w: 16, h: 16, collected: false, chunkId: chunkId,
+                name: foodType.name,
+                hunger: foodType.hunger,
+                color: foodType.color,
+                emoji: foodType.emoji
+              });
+            }
+          }
+          
+          // Generate art cars (scaled by population)
+          if (Math.random() < 0.4 * worldPopulationMultiplier) { // Population-scaled chance (5x increase)
+            
+            // Different art car types with unique properties (50% smaller + tiny fast ones)
+            const carTypes = [
+              // Regular sized cars (50% smaller)
+              { name: "Disco Bus", w: 400, h: 200, color: "#ff6b35", speed: 3.0, design: "bus" },
+              { name: "Crystal Ship", w: 300, h: 250, color: "#8b5cf6", speed: 4.0, design: "ship" },
+              { name: "Neon Whale", w: 500, h: 150, color: "#06ffa5", speed: 2.5, design: "whale" },
+              { name: "Laser Cat", w: 250, h: 175, color: "#ffd23f", speed: 6.0, design: "cat" },
+              { name: "Rainbow Dragon", w: 350, h: 225, color: "#ff4757", speed: 5.0, design: "dragon" },
+              { name: "Cosmic Turtle", w: 450, h: 300, color: "#2ed573", speed: 2.0, design: "turtle" },
+              { name: "Phoenix Express", w: 325, h: 190, color: "#ff6348", speed: 8.0, design: "phoenix" },
+              { name: "Mystic Octopus", w: 275, h: 275, color: "#5f27cd", speed: 4.5, design: "octopus" },
+              
+              // Tiny fast cars with weird movement
+              { name: "Zippy Bug", w: 120, h: 80, color: "#ff1493", speed: 12.0, design: "bug", weirdMovement: true },
+              { name: "Spinning Top", w: 100, h: 100, color: "#00ffff", speed: 10.0, design: "top", weirdMovement: true },
+              { name: "Crazy Cube", w: 90, h: 90, color: "#ffff00", speed: 9.0, design: "cube", weirdMovement: true },
+              { name: "Bouncing Ball", w: 80, h: 80, color: "#ff4500", speed: 11.0, design: "ball", weirdMovement: true },
+              { name: "Dizzy Disc", w: 110, h: 60, color: "#9370db", speed: 10.5, design: "disc", weirdMovement: true }
+            ];
+            
+            const carType = carTypes[Math.floor(Math.random() * carTypes.length)];
+            const baseSpeed = carType.speed;
+            
+            // Try to find a non-overlapping position
+            let attempts = 0;
+            let newCar = null;
+            
+            while (attempts < 10 && !newCar) {
+              const testX = chunkStartX + Math.random() * chunkSize;
+              const testY = chunkStartY + Math.random() * chunkSize;
+              
+              // Check if position is within boundaries first
+              if (!isWithinBoundaries(testX + carType.w/2, testY + carType.h/2)) {
+                attempts++;
+                continue;
+              }
+              
+              // Check if this position overlaps with existing art cars
+              let overlaps = false;
+              for (let existingCar of artCars) {
+                if (testX < existingCar.x + existingCar.w &&
+                    testX + carType.w > existingCar.x &&
+                    testY < existingCar.y + existingCar.h &&
+                    testY + carType.h > existingCar.y) {
+                  overlaps = true;
+                  break;
+                }
+              }
+              
+              if (!overlaps) {
+                let vx, vy;
+                
+                if (carType.weirdMovement) {
+                  // Weird movement patterns for tiny fast cars
+                  const patterns = [
+                    // Diagonal zigzag
+                    () => ({ vx: Math.random() > 0.5 ? baseSpeed : -baseSpeed, vy: Math.random() > 0.5 ? baseSpeed * 0.7 : -baseSpeed * 0.7 }),
+                    // Spiral movement
+                    () => ({ vx: baseSpeed * Math.cos(Date.now() * 0.001), vy: baseSpeed * Math.sin(Date.now() * 0.001) }),
+                    // Random direction changes
+                    () => ({ vx: (Math.random() - 0.5) * baseSpeed * 2, vy: (Math.random() - 0.5) * baseSpeed * 2 }),
+                    // Figure-8 pattern
+                    () => ({ vx: baseSpeed * Math.sin(Date.now() * 0.002), vy: baseSpeed * Math.sin(Date.now() * 0.001) }),
+                    // Chaotic movement
+                    () => ({ vx: (Math.random() - 0.5) * baseSpeed * 3, vy: (Math.random() - 0.5) * baseSpeed * 3 })
+                  ];
+                  
+                  const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+                  const velocity = pattern();
+                  vx = velocity.vx;
+                  vy = velocity.vy;
+                } else {
+                  // Normal movement for regular cars
+                  vx = (Math.random() - 0.5) * baseSpeed;
+                  vy = (Math.random() - 0.5) * baseSpeed;
+                }
+                
+                newCar = {
+                  x: testX,
+                  y: testY,
+                  w: carType.w, 
+                  h: carType.h,
+                  vx: vx,
+                  vy: vy,
+                  color: carType.color,
+                  name: carType.name,
+                  design: carType.design,
+                  weirdMovement: carType.weirdMovement || false,
+                  hasPassenger: false,
+                  chunkId: chunkId
+                };
+              }
+              
+              attempts++;
+            }
+            
+            // Only add the car if we found a non-overlapping position
+            if (newCar) {
+              artCars.push(newCar);
+            }
+          }
+          
+          // Generate bikes (scaled by population)
+          const bikeColors = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#ff6348', '#5f27cd'];
+          const bikeCount = Math.floor((Math.random() * 6 + 3) * worldPopulationMultiplier); // 3x increase (3-8 bikes per chunk)
+          for (let i = 0; i < bikeCount; i++) {
+            const x = chunkStartX + Math.random() * chunkSize;
+            const y = chunkStartY + Math.random() * chunkSize;
+            
+            // Only add if within boundaries
+            if (isWithinBoundaries(x, y)) {
+              const bike = {
+                x: x,
+                y: y,
+                w: 72, h: 44, collected: false, chunkId: chunkId,
+                color: bikeColors[Math.floor(Math.random() * bikeColors.length)]
+              };
+              bikes.push(bike);
+              console.log('Generated bike at:', bike.x, bike.y);
+            }
+          }
+          
+          // Generate MOOP items (scaled by population)
+          const moopTypes = [
+            { name: 'Zip Tie', emoji: '🔗', karmaValue: 2, inventoryItem: false },
+            { name: 'Clothing', emoji: '👕', karmaValue: 0, inventoryItem: true, moodBoost: 15, energyBoost: 10 },
+            { name: 'Trinket', emoji: '✨', karmaValue: 0, inventoryItem: true, moodBoost: 12, energyBoost: 8 },
+            { name: 'Flashing Light', emoji: '💡', karmaValue: 4, inventoryItem: false },
+            { name: 'Cup', emoji: '🥤', karmaValue: 1, inventoryItem: false },
+            { name: 'Cigarette Butt', emoji: '🚬', karmaValue: 1, inventoryItem: false }
+          ];
+          
+          const moopCount = Math.floor((Math.random() * 10 + 5) * worldPopulationMultiplier);
+          for (let i = 0; i < moopCount; i++) {
+            const moopType = moopTypes[Math.floor(Math.random() * moopTypes.length)];
+            const x = chunkStartX + Math.random() * chunkSize;
+            const y = chunkStartY + Math.random() * chunkSize;
+            
+            // Only add if within boundaries
+            if (isWithinBoundaries(x, y)) {
+              moop.push({
+                x: x,
+                y: y,
+                w: 12, h: 12, collected: false, chunkId: chunkId,
+                type: moopType.name,
+                emoji: moopType.emoji,
+                karmaValue: moopType.karmaValue,
+                inventoryItem: moopType.inventoryItem || false,
+                moodBoost: moopType.moodBoost || 0,
+                energyBoost: moopType.energyBoost || 0
+              });
+            }
+          }
+          
+          // Generate drugs (scaled by population)
+          const drugTypes = [
+            // Mystery pills - only Molly
+            { name: 'Mystery Pill', emoji: '💊', speedMultiplier: 1.5, duration: 4, hallucinating: true, mysteryType: 'Molly', timeMultiplier: 0.8 }, // 4 hours
+            // Mystery snowballs - could be either Speed or Ketamine (50/50 chance)
+            { name: 'Mystery Snowball', emoji: '⚪️', speedMultiplier: 2.0, duration: 2, hallucinating: false, mysteryType: 'Speed', timeMultiplier: 2.0 }, // 2 hours
+            { name: 'Mystery Snowball', emoji: '⚪️', speedMultiplier: 0.3, duration: 3, hallucinating: true, mysteryType: 'Ketamine', timeMultiplier: 0.1 }, // 3 hours
+            // Unique drugs with distinct appearances
+            { name: 'LSD', emoji: '🌈', speedMultiplier: 0.5, duration: 8, hallucinating: true, timeMultiplier: 0.3 }, // 8 hours
+            { name: 'Shrooms', emoji: '🍄', speedMultiplier: 0.7, duration: 6, hallucinating: true, timeMultiplier: 0.5 }, // 6 hours
+            { name: 'Caffeine', emoji: '☕', speedMultiplier: 1.3, duration: 1, hallucinating: false, timeMultiplier: 1.5 }, // 1 hour
+            // New drugs
+            { name: 'Whip Its', emoji: '🎈', speedMultiplier: 1.0, duration: 0.15, hallucinating: false, moodBoost: 10, energyBoost: 5, timeMultiplier: 0 }, // 15 minutes - stops time
+            { name: 'Cigarette', emoji: '🚬', speedMultiplier: 1.0, duration: 0.5, hallucinating: false, moodBoost: 3, energyBoost: 2, timeMultiplier: 1.0 }, // 30 minutes
+            { name: 'Joint', emoji: '🚬', speedMultiplier: 0.8, duration: 2, hallucinating: true, moodBoost: 8, energyBoost: -2, timeMultiplier: 0.7 }, // 2 hours
+            { name: 'Alcohol', emoji: '🍺', speedMultiplier: 0.6, duration: 3, hallucinating: false, moodBoost: 5, energyBoost: -5, timeMultiplier: 1.0 } // 3 hours
+          ];
+          
+          const drugCount = Math.floor((Math.random() * 4 + 2) * worldPopulationMultiplier);
+          for (let i = 0; i < drugCount; i++) {
+            const drugType = drugTypes[Math.floor(Math.random() * drugTypes.length)];
+            
+            // For Mystery Snowballs, randomly choose between Speed and Ketamine
+            let actualDrugType = drugType;
+            if (drugType.name === 'Mystery Snowball') {
+              const isSpeed = Math.random() < 0.5; // 50% chance
+              if (isSpeed) {
+                actualDrugType = {
+                  ...drugType,
+                  speedMultiplier: 2.0,
+                  duration: 2,
+                  hallucinating: false,
+                  mysteryType: 'Speed',
+                  timeMultiplier: 2.0
+                };
+              } else {
+                actualDrugType = {
+                  ...drugType,
+                  speedMultiplier: 0.3,
+                  duration: 3,
+                  hallucinating: true,
+                  mysteryType: 'Ketamine',
+                  timeMultiplier: 0.1
+                };
+              }
+            }
+            
+            // For cigarettes, randomly choose between Cigarette and Joint
+            if (drugType.name === 'Cigarette') {
+              const isJoint = Math.random() < 0.5; // 50% chance
+              if (isJoint) {
+                actualDrugType = {
+                  ...drugType,
+                  name: 'Joint',
+                  speedMultiplier: 0.8,
+                  duration: 2,
+                  hallucinating: true,
+                  moodBoost: 8,
+                  energyBoost: -2,
+                  timeMultiplier: 0.7
+                };
+              } else {
+                actualDrugType = {
+                  ...drugType,
+                  speedMultiplier: 1.0,
+                  duration: 0.5,
+                  hallucinating: false,
+                  moodBoost: 3,
+                  energyBoost: 2,
+                  timeMultiplier: 1.0
+                };
+              }
+            }
+            
+            const x = chunkStartX + Math.random() * chunkSize;
+            const y = chunkStartY + Math.random() * chunkSize;
+            
+            // Only add if within boundaries
+            if (isWithinBoundaries(x, y)) {
+              drugs.push({
+                x: x,
+                y: y,
+                w: 20, h: 20, collected: false, chunkId: chunkId,
+              type: actualDrugType.name,
+              emoji: actualDrugType.emoji,
+              speedMultiplier: actualDrugType.speedMultiplier,
+              duration: actualDrugType.duration,
+              hallucinating: actualDrugType.hallucinating,
+              mysteryType: actualDrugType.mysteryType // Include mystery type
+              });
+            }
+          }
+          
+          // Generate special locations (scaled by population)
+          if (Math.random() < 0.3 * worldPopulationMultiplier) { // Population-scaled chance
+            const locationTypes = [
+              { type: 'danceFloor', emoji: '💃', name: 'Dance Floor', size: 80 },
+              { type: 'artInstallation', emoji: '🎨', name: 'Art Installation', size: 60 },
+              { type: 'orgyDome', emoji: '🏕️', name: 'Orgy Dome', size: 100 },
+              { type: 'homeCamp', emoji: '🏠', name: 'Home Camp', size: 120 }
+            ];
+            
+            const location = locationTypes[Math.floor(Math.random() * locationTypes.length)];
+            
+            const locationObj = {
+              x: chunkStartX + Math.random() * (chunkSize - location.size),
+              y: chunkStartY + Math.random() * (chunkSize - location.size),
+              w: location.size,
+              h: location.size,
+              type: location.type,
+              emoji: location.emoji,
+              name: location.name,
+              chunkId: chunkId
+            };
+            
+            switch (location.type) {
+              case 'danceFloor':
+                danceFloors.push(locationObj);
+                break;
+              case 'artInstallation':
+                artInstallations.push(locationObj);
+                break;
+              case 'orgyDome':
+                orgyDomes.push(locationObj);
+                break;
+              case 'homeCamp':
+                homeCamps.push(locationObj);
+                break;
+            }
+          }
+        }
+      }
+    }
+
+    // Generate the single center camp (only once)
+    function generateCenterCamp() {
+      // Only generate if no center camp exists
+      if (centerCamps.length === 0) {
+        // Position center camp between the yellow line (800px) and trash fence (1450px) on the bottom
+        const centerCampX = 0; // Center horizontally
+        const centerCampY = MAN_CIRCLE_RADIUS + 100; // Between yellow line and trash fence on bottom
+        const centerCampSize = 120;
+        
+        // Make sure it's within boundaries
+        if (isWithinBoundaries(centerCampX + centerCampSize/2, centerCampY + centerCampSize/2)) {
+          centerCamps.push({
+            x: centerCampX - centerCampSize/2,
+            y: centerCampY - centerCampSize/2,
+            w: centerCampSize,
+            h: centerCampSize,
+            type: 'centerCamp',
+            emoji: '🏛️',
+            name: 'Center Camp',
+            chunkId: 'center-camp'
+          });
+          console.log('Generated Center Camp at:', centerCampX, centerCampY);
+        }
+      }
+    }
+    
+    // Track generated chunks
+    const generatedChunks = new Set();
+    
+    // Day/night cycle variables
+    let lastTimeUpdate = 0;
+    const SECONDS_PER_DAY = 24; // 24 seconds = 1 day
+    
+    // Burning Man timeline
+    const BURNING_MAN_DURATION = 10; // 10 days total
+    const MAN_BURN_DAY = 7; // Saturday (day 7) - Man burns (next Saturday night)
+    const TEMPLE_BURN_DAY = 8; // Sunday (day 8) - Temple burns
+    
+    // Map boundaries and features
+    const TEMPLE_DISTANCE = 750; // Distance from Man to Temple
+    const PLAYA_RADIUS = TEMPLE_DISTANCE * 2; // Twice the temple distance = 1500 pixels
+    const MAN_CIRCLE_RADIUS = 800; // Radius of the circle around the Man
+    const TRASH_FENCE_RADIUS = PLAYA_RADIUS - 50; // Inner radius of the trash fence
+    
+    // Progressive world population
+    let dailyAnnouncements = [];
+    let worldPopulationMultiplier = 0.1; // Start with 10% population
+    let lastDisappearingDay = 0; // Track when we last ran disappearing logic
+    let lastAnnouncedDay = 0; // Track which day we last announced
+    
+    // Game pause state
+    let gamePaused = false;
+    
+    // Man and Temple structures
+    const manStructure = { 
+      x: 0, y: 0, w: 80, h: 120, burned: false, 
+      limbs: 0, maxLimbs: 7, // Start with 0 limbs, grow to 7 by day 8
+      constructionProgress: 0 // 0-100% construction progress
+    };
+    const templeStructure = { 
+      x: 0, y: -750, w: 100, h: 80, burned: false,
+      constructionProgress: 0 // 0-100% construction progress
+    };
+    
+    // Player state for art car riding
+    let ridingArtCar = null;
+    let lastExitTime = 0; // Track when we last exited an art car
+    
+    // Player state for bike riding
+    let ridingBike = null;
+    
+    // Track nearby vehicles for boarding
+    let nearbyArtCar = null;
+    let nearbyBike = null;
+    
+    // Update transport buttons based on nearby vehicles and riding status
+    function updateTransportButtons() {
+      const transportActions = document.getElementById('transport-actions');
+      const boardBtn = document.getElementById('board-btn');
+      const dismountBtn = document.getElementById('dismount-btn');
+      
+      // Exit early if buttons don't exist yet
+      if (!transportActions || !boardBtn || !dismountBtn) {
+        return;
+      }
+      
+      // Reset nearby vehicle detection
+      nearbyArtCar = null;
+      nearbyBike = null;
+      let closestArtCarDistance = Infinity;
+      
+      // Check for nearby art cars - find the closest one
+      artCars.forEach(car => {
+        const distance = Math.sqrt(
+          Math.pow(player.worldX + player.w/2 - (car.x + car.w/2), 2) + 
+          Math.pow(player.worldY + player.h/2 - (car.y + car.h/2), 2)
+        );
+        
+        if (distance < 60 && distance < closestArtCarDistance) {
+          nearbyArtCar = car;
+          closestArtCarDistance = distance;
+          
+          // Autoboard if touching and not already riding
+          if (distance < 30 && ridingArtCar === null && ridingBike === null && Date.now() - lastExitTime > 3000) {
+            console.log(`Auto-boarding ${car.name}!`);
+            ridingArtCar = car;
+            car.hasPassenger = true;
+            // Position player in center of car platform
+            player.worldX = car.x + car.w / 2 - player.w / 2;
+            player.worldY = car.y + car.h / 2 - player.h / 2;
+          }
+        }
+      });
+      
+      // Check for nearby bikes
+      bikes.forEach(bike => {
+        if (!bike.collected) {
+          const distance = Math.sqrt(
+            Math.pow(player.worldX + player.w/2 - (bike.x + bike.w/2), 2) + 
+            Math.pow(player.worldY + player.h/2 - (bike.y + bike.h/2), 2)
+          );
+          
+          if (distance < 60) { // Adjusted for larger bikes
+            nearbyBike = bike;
+            console.log('Nearby bike detected at distance:', distance);
+          }
+        }
+      });
+      
+      // Show/hide transport buttons based on state
+      if (ridingArtCar || ridingBike) {
+        // Show dismount button when riding something
+        transportActions.style.display = 'grid';
+        boardBtn.style.display = 'none';
+        dismountBtn.style.display = 'block';
+        dismountBtn.textContent = ridingArtCar ? `Dismount ${ridingArtCar.name}` : 'Dismount Bike [Space]';
+      } else if (nearbyArtCar || nearbyBike) {
+        // Show board button when near a vehicle
+        transportActions.style.display = 'grid';
+        boardBtn.style.display = 'block';
+        dismountBtn.style.display = 'none';
+        boardBtn.textContent = nearbyArtCar ? `Board ${nearbyArtCar.name}` : 'Ride Bike [Space]';
+      } else {
+        // Hide transport buttons when not near vehicles or riding
+        transportActions.style.display = 'none';
+      }
+    }
+    
+    // Update bikes
+    function updateBikes() {
+      bikes.forEach(bike => {
+        // If player is riding this bike, move it with the player
+        if (ridingBike === bike) {
+          // Center the bike on the player
+          bike.x = player.worldX + player.w/2 - bike.w/2;
+          bike.y = player.worldY + player.h/2 - bike.h/2;
+          
+          // Debug bike riding state
+          console.log('Bike riding - Player pos:', player.worldX, player.worldY, 'Bike pos:', bike.x, bike.y);
+        }
+      });
+    }
+    
+    // Update art cars
+    function updateArtCars() {
+      artCars.forEach(car => {
+        // Store old position
+        const oldX = car.x;
+        const oldY = car.y;
+        
+        // Update weird movement patterns for tiny fast cars
+        if (car.weirdMovement && Math.random() < 0.02) { // 2% chance each frame to change direction
+          const patterns = [
+            // Diagonal zigzag
+            () => ({ vx: Math.random() > 0.5 ? car.vx : -car.vx, vy: Math.random() > 0.5 ? car.vy * 0.7 : -car.vy * 0.7 }),
+            // Spiral movement
+            () => ({ vx: Math.abs(car.vx) * Math.cos(Date.now() * 0.001), vy: Math.abs(car.vy) * Math.sin(Date.now() * 0.001) }),
+            // Random direction changes
+            () => ({ vx: (Math.random() - 0.5) * Math.abs(car.vx) * 2, vy: (Math.random() - 0.5) * Math.abs(car.vy) * 2 }),
+            // Figure-8 pattern
+            () => ({ vx: Math.abs(car.vx) * Math.sin(Date.now() * 0.002), vy: Math.abs(car.vy) * Math.sin(Date.now() * 0.001) }),
+            // Chaotic movement
+            () => ({ vx: (Math.random() - 0.5) * Math.abs(car.vx) * 3, vy: (Math.random() - 0.5) * Math.abs(car.vy) * 3 })
+          ];
+          
+          const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+          const velocity = pattern();
+          car.vx = velocity.vx;
+          car.vy = velocity.vy;
+        }
+        
+        // Move art car (2x faster)
+        car.x += car.vx * 2;
+        car.y += car.vy * 2;
+        
+        // Check for collision with other art cars
+        let collided = false;
+        for (let otherCar of artCars) {
+          if (otherCar !== car) {
+            if (car.x < otherCar.x + otherCar.w &&
+                car.x + car.w > otherCar.x &&
+                car.y < otherCar.y + otherCar.h &&
+                car.y + car.h > otherCar.y) {
+              // Collision detected - revert to old position and reverse direction
+              car.x = oldX;
+              car.y = oldY;
+              car.vx *= -1;
+              car.vy *= -1;
+              collided = true;
+              break;
+            }
+          }
+        }
+        
+        // Bounce off edges (only if no collision with other cars)
+        if (!collided) {
+          if (car.x < 0 || car.x > 10000) car.vx *= -1;
+          if (car.y < 0 || car.y > 10000) car.vy *= -1;
+        }
+        
+        // If player is riding this car, move with it
+        if (ridingArtCar === car) {
+          // Player can move around on the car, but we need to track their offset from car center
+          if (!car.playerOffset) {
+            // Initialize player offset when first boarding
+            car.playerOffset = { x: 0, y: 0 };
+          }
+          
+          // Update player position based on car position + their offset
+          const newPlayerX = car.x + car.w / 2 - player.w / 2 + car.playerOffset.x;
+          const newPlayerY = car.y + car.h / 2 - player.h / 2 + car.playerOffset.y;
+          
+          // Keep player within car bounds
+          const maxOffsetX = car.w / 2 - player.w / 2 - 10;
+          const maxOffsetY = car.h / 2 - player.h / 2 - 10;
+          
+          car.playerOffset.x = Math.max(-maxOffsetX, Math.min(maxOffsetX, newPlayerX - (car.x + car.w / 2 - player.w / 2)));
+          car.playerOffset.y = Math.max(-maxOffsetY, Math.min(maxOffsetY, newPlayerY - (car.y + car.h / 2 - player.h / 2)));
+          
+          player.worldX = car.x + car.w / 2 - player.w / 2 + car.playerOffset.x;
+          player.worldY = car.y + car.h / 2 - player.h / 2 + car.playerOffset.y;
+        }
+        
+        // Art car collision is now handled in the main update loop
+      });
+    }
+    
+    // Generate initial world content
+    generateWorldContent();
+    
+    // Stat decay timer
+    let lastStatDecay = Date.now();
+    const statDecayInterval = 3000; // 3 seconds
+    
+    // Utility functions
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+    function rnd(p) { return Math.random() < p; }
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    
+    // Encounters from text version
+    const encounters = [
+      { 
+        id: 'cuddle', 
+        text: 'You stumble into a cuddle puddle under a parachute shade.', 
+        choices: [
+          { label: 'Ask for consent and join', eff: function(s) { s.mood += 10; s.karma += 5; s.energy += 5; } },
+          { label: 'Politely decline and gift a snack', eff: function(s) { s.karma += 3; s.coin -= 1; } },
+          { label: 'Dive in without asking (rude)', eff: function(s) { s.karma -= 10; s.mood -= 10; } }
+        ]
+      },
+      { 
+        id: 'orgy', 
+        text: 'You find a velvet tent with a discreet sign. A ranger raises an eyebrow.', 
+        choices: [
+          { label: 'Ask the host for rules (consent + hygiene)', eff: function(s) { s.karma += 5; s.mood += 5; } },
+          { label: 'Decide it\'s not for you, offer water at the door', eff: function(s) { s.karma += 4; s.coin -= 1; } },
+          { label: 'Sneak photos (not cool)', eff: function(s) { s.karma -= 20; s.mood -= 15; } }
+        ]
+      },
+      { 
+        id: 'moop', 
+        text: 'Wind scatters sequins—MOOP alert! Do you pitch in?', 
+        choices: [
+          { label: 'Lead a micro-MOOP sweep', eff: function(s) { s.karma += 6; s.coin += 2; s.energy -= 5; } },
+          { label: 'Pick up a few pieces', eff: function(s) { s.karma += 2; } },
+          { label: 'Ignore it', eff: function(s) { s.karma -= 4; } }
+        ]
+      },
+      { 
+        id: 'storm', 
+        text: 'A dust storm rolls in. Visibility drops.', 
+        onEnter: function() { player.flags.storm = true; }, 
+        onExit: function() { player.flags.storm = false; }, 
+        choices: [
+          { label: 'Shelter in place', eff: function(s) { s.energy += 5; s.thirst -= 5; } },
+          { label: 'Wander (thirst drains faster)', eff: function(s) { s.thirst -= 15; s.mood += 2; } },
+          { label: 'Put on goggles and dance', eff: function(s) { s.mood += 6; s.thirst -= 10; } }
+        ]
+      },
+      { 
+        id: 'loot', 
+        text: 'You find a neon cape and a mysterious lost sock.', 
+        choices: [
+          { label: 'Take cape (+night energy)', eff: function(s) { invPush('Neon Cape'); s.mood += 3; } },
+          { label: 'Take sock (+1 luck… probably)', eff: function(s) { invPush('Lost Sock'); s.karma += 1; } },
+          { label: 'Gift them forward', eff: function(s) { s.karma += 5; } }
+        ]
+      }
+    ];
+
+    // Time advancement function
+    function advance(minutes) {
+      player.time.minute += minutes;
+      while (player.time.minute >= 60) { 
+        player.time.minute -= 60; 
+        player.time.hour++; 
+      }
+      while (player.time.hour >= 24) { 
+        player.time.hour -= 24; 
+        player.time.day++; 
+      }
+      
+      const blocks = Math.max(1, Math.floor(minutes / 30));
+      for (let i = 0; i < blocks; i++) {
+        player.stats.hunger = clamp(player.stats.hunger - 3, 0, 100);
+        player.stats.thirst = clamp(player.stats.thirst - (player.flags.storm ? 6 : 4), 0, 100);
+        if (player.stats.thirst <= 20) player.stats.energy = clamp(player.stats.energy - 3, 0, 100);
+        if (player.stats.hunger <= 20) player.stats.mood = clamp(player.stats.mood - 2, 0, 100);
+        if (player.stats.energy <= 10) player.stats.mood = clamp(player.stats.mood - 2, 0, 100);
+      }
+      updateTimeDisplay();
+    }
+    
+    // Inventory functions
+    function invPush(name) {
+      if (player.inventory[name]) {
+        player.inventory[name]++;
+      } else {
+        player.inventory[name] = 1;
+      }
+      updateInventoryDisplay();
+    }
+    
+    function useItem(name, effect) {
+      if (player.inventory[name] && player.inventory[name] > 0) {
+        player.inventory[name]--;
+        if (player.inventory[name] === 0) {
+          delete player.inventory[name];
+        }
+        applyEff(effect);
+        updateInventoryDisplay();
+        return true;
+      }
+      return false;
+    }
+    
+    // Effect application
+    function applyEff(fn) {
+      const s = player.stats;
+      fn(s);
+      s.coin = clamp(s.coin, 0, 999);
+      s.karma = clamp(s.karma, 0, 999);
+      s.hunger = clamp(s.hunger, 0, 100);
+      s.thirst = clamp(s.thirst, 0, 100);
+      s.energy = clamp(s.energy, 0, 100);
+      s.mood = clamp(s.mood, 0, 100);
+      updateStatsDisplay();
+    }
+
+    document.addEventListener("keydown", e => { 
+      keys[e.key] = true; 
+      
+      // R hotkey for rest/wake up
+      if (e.key.toLowerCase() === 'r' && !document.querySelector('.encounter-modal') && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        if (player.sleeping) {
+          // Wake up if sleeping
+          player.sleeping = false;
+          showCollectionFeedback('Woke up early!', 'energy', 0);
+        } else {
+          // Start napping if not sleeping
+          actions.rest();
+        }
+        return;
+      }
+      
+      // C hotkey for climbing art (only when near art installations)
+      if (e.key.toLowerCase() === 'c' && !document.querySelector('.encounter-modal') && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        // Check if player is near an art installation
+        let nearArt = false;
+        artInstallations.forEach(art => {
+          const distance = Math.sqrt(
+            Math.pow(player.worldX + player.w/2 - (art.x + art.w/2), 2) + 
+            Math.pow(player.worldY + player.h/2 - (art.y + art.h/2), 2)
+          );
+          if (distance < 80) {
+            nearArt = true;
+          }
+        });
+        
+        if (nearArt) {
+          actions.climb();
+        } else {
+          showCollectionFeedback('No art nearby to climb!', 'mood', 0);
+        }
+        return;
+      }
+      
+      // H hotkey for chores (only when at home camps)
+      if (e.key.toLowerCase() === 'h' && !document.querySelector('.encounter-modal') && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        // Check if player is at a home camp
+        let atHome = false;
+        homeCamps.forEach(camp => {
+          const distance = Math.sqrt(
+            Math.pow(player.worldX + player.w/2 - (camp.x + camp.w/2), 2) + 
+            Math.pow(player.worldY + player.h/2 - (camp.y + camp.h/2), 2)
+          );
+          if (distance < 80) {
+            atHome = true;
+          }
+        });
+        
+        if (atHome) {
+          actions.chore();
+        } else {
+          showCollectionFeedback('You need to be at home to do chores!', 'mood', 0);
+        }
+        return;
+      }
+      
+      // D hotkey for dancing (only when on dance floors)
+      if (e.key.toLowerCase() === 'd' && !document.querySelector('.encounter-modal') && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        // Check if player is on a dance floor
+        let onDanceFloor = false;
+        danceFloors.forEach(floor => {
+          const distance = Math.sqrt(
+            Math.pow(player.worldX + player.w/2 - (floor.x + floor.w/2), 2) + 
+            Math.pow(player.worldY + player.h/2 - (floor.y + floor.h/2), 2)
+          );
+          if (distance < 80) {
+            onDanceFloor = true;
+          }
+        });
+        
+        if (onDanceFloor) {
+          actions.dance();
+        } else {
+          showCollectionFeedback('You need to be on a dance floor to dance!', 'mood', 0);
+        }
+        return;
+      }
+      
+      // O hotkey for orgy (only when at orgy domes)
+      if (e.key.toLowerCase() === 'o' && !document.querySelector('.encounter-modal') && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        // Check if player is at an orgy dome
+        let atOrgyDome = false;
+        orgyDomes.forEach(dome => {
+          const distance = Math.sqrt(
+            Math.pow(player.worldX + player.w/2 - (dome.x + dome.w/2), 2) + 
+            Math.pow(player.worldY + player.h/2 - (dome.y + dome.h/2), 2)
+          );
+          if (distance < 80) {
+            atOrgyDome = true;
+          }
+        });
+        
+        if (atOrgyDome) {
+          actions.orgy();
+        } else {
+          showCollectionFeedback('You need to be at an orgy dome to participate!', 'mood', 0);
+        }
+        return;
+      }
+      
+      // Spacebar for bike control
+      if (e.key === ' ' && !e.repeat) { // Prevent key repeat
+        e.preventDefault();
+        if (ridingBike) {
+          // Dismount bike
+          actions.dismount();
+        } else if (nearbyBike) {
+          // Mount bike
+          actions.board();
+        }
+        return;
+      }
+      
+      // Wake up from sleep with any key (except movement keys)
+      if (player.sleeping && !['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+        e.preventDefault();
+        player.sleeping = false;
+        showCollectionFeedback('Woke up early!', 'energy', 0);
+        return;
+      }
+      
+      // G hotkey for giving gifts
+      if (e.key.toLowerCase() === 'g' && !document.querySelector('.encounter-modal') && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        actions.gift();
+        return;
+      }
+      
+      // Inventory hotkeys (only process if not in a modal or input)
+      if (!document.querySelector('.encounter-modal') && !e.target.matches('input, textarea')) {
+        // Water - W
+        if (e.key.toLowerCase() === 'w') {
+          e.preventDefault();
+          if (player.inventory['Water'] && player.inventory['Water'] > 0) {
+            if (!useItem('Water', function(s) { s.thirst += 35; s.mood += 3; })) {
+              alert('No water left.');
+            }
+          }
+        }
+        
+        // Trinket - T
+        else if (e.key.toLowerCase() === 't') {
+          e.preventDefault();
+          if (player.inventory['Trinket'] && player.inventory['Trinket'] > 0) {
+            if (!useItem('Trinket', function(s) { s.mood += 12; s.energy += 8; })) {
+              alert('No trinkets left.');
+            }
+          }
+        }
+        
+        // Clothing - L (avoiding C conflict with climb)
+        else if (e.key.toLowerCase() === 'l') {
+          e.preventDefault();
+          if (player.inventory['Clothing'] && player.inventory['Clothing'] > 0) {
+            if (!useItem('Clothing', function(s) { s.mood += 15; s.energy += 10; })) {
+              alert('No clothing left.');
+            }
+          }
+        }
+        
+        // Food hotkeys - first letter of each food (avoiding conflicts)
+        else if (e.key.toLowerCase() === 'j') { // J for grilled cheese (avoiding G conflict)
+          e.preventDefault();
+          if (player.inventory['Grilled Cheese'] && player.inventory['Grilled Cheese'] > 0) {
+            if (!useItem('Grilled Cheese', function(s) { s.hunger += 25; s.mood += 8; })) {
+              alert('No grilled cheese left.');
+            }
+          }
+        }
+        else if (e.key.toLowerCase() === 'v') {
+          e.preventDefault();
+          if (player.inventory['Veggie Burger'] && player.inventory['Veggie Burger'] > 0) {
+            if (!useItem('Veggie Burger', function(s) { s.hunger += 35; s.mood += 10; })) {
+              alert('No veggie burger left.');
+            }
+          }
+        }
+        else if (e.key.toLowerCase() === 'f') {
+          e.preventDefault();
+          if (player.inventory['Fruit Salad'] && player.inventory['Fruit Salad'] > 0) {
+            if (!useItem('Fruit Salad', function(s) { s.hunger += 20; s.mood += 6; })) {
+              alert('No fruit salad left.');
+            }
+          }
+        }
+        else if (e.key.toLowerCase() === 'e') {
+          e.preventDefault();
+          if (player.inventory['Energy Bar'] && player.inventory['Energy Bar'] > 0) {
+            if (!useItem('Energy Bar', function(s) { s.hunger += 15; s.mood += 4; })) {
+              alert('No energy bar left.');
+            }
+          }
+        }
+        else if (e.key.toLowerCase() === 'p') {
+          e.preventDefault();
+          if (player.inventory['Pizza Slice'] && player.inventory['Pizza Slice'] > 0) {
+            if (!useItem('Pizza Slice', function(s) { s.hunger += 30; s.mood += 12; })) {
+              alert('No pizza slice left.');
+            }
+          }
+        }
+        else if (e.key.toLowerCase() === 's') {
+          e.preventDefault();
+          if (player.inventory['Smoothie'] && player.inventory['Smoothie'] > 0) {
+            if (!useItem('Smoothie', function(s) { s.hunger += 18; s.mood += 5; })) {
+              alert('No smoothie left.');
+            }
+          }
+        }
+      }
+    });
+    document.addEventListener("keyup", e => { keys[e.key] = false; });
+    
+    // Canvas click handling removed - now using buttons for boarding/dismounting
+    
+
+    function update() {
+      // Don't update if game has ended
+      if (gameState.ended) return;
+      
+      // Handle sleeping state
+      if (player.sleeping) {
+        // Restore energy while sleeping (1 energy per second)
+        player.stats.energy = Math.min(100, player.stats.energy + 1);
+        
+        // Wake up if energy is full
+        if (player.stats.energy >= 100) {
+          player.sleeping = false;
+          showCollectionFeedback('Woke up fully rested!', 'energy', 0);
+        }
+        
+        // Update stats display to show energy restoration
+        updateStatsDisplay();
+      }
+      
+      // Movement in world coordinates
+      if (ridingArtCar === null) {
+        // Debug movement state
+        if (keys["ArrowUp"] || keys["ArrowLeft"] || keys["ArrowDown"] || keys["ArrowRight"]) {
+          console.log('Trying to move - ridingArtCar:', ridingArtCar, 'ridingBike:', ridingBike);
+          console.log('Player position:', player.worldX, player.worldY);
+        }
+        // Calculate speed (1.5x when riding bike, modified by drug effects)
+        let baseSpeed = ridingBike ? player.speed * 1.5 : player.speed;
+        
+        // Apply speed effects from all active drugs
+        let speedMultiplier = 1;
+        player.drugEffects.activeDrugs.forEach(drug => {
+          speedMultiplier *= drug.speedMultiplier;
+        });
+        
+        // Add stat-based speed multipliers for all stats
+        const stats = player.stats;
+        
+        // Energy multiplier (0.3x to 1.2x based on energy level)
+        const energyMultiplier = 0.3 + (stats.energy / 100) * 0.9;
+        
+        // Thirst multiplier (0.4x to 1.1x based on thirst level)
+        const thirstMultiplier = 0.4 + (stats.thirst / 100) * 0.7;
+        
+        // Hunger multiplier (0.5x to 1.1x based on hunger level)
+        const hungerMultiplier = 0.5 + (stats.hunger / 100) * 0.6;
+        
+        // Mood multiplier (0.6x to 1.2x based on mood level)
+        const moodMultiplier = 0.6 + (stats.mood / 100) * 0.6;
+        
+        // Apply all stat multipliers
+        speedMultiplier *= energyMultiplier * thirstMultiplier * hungerMultiplier * moodMultiplier;
+        
+        // Add visual feedback for low stats
+        if (Math.random() < 0.005) { // 0.5% chance per frame to show feedback
+          if (stats.energy < 20) {
+            showCollectionFeedback('Low Energy - Moving Slowly!', 'energy', 0);
+          } else if (stats.thirst < 20) {
+            showCollectionFeedback('Dehydrated - Moving Slowly!', 'thirst', 0);
+          } else if (stats.hunger < 20) {
+            showCollectionFeedback('Hungry - Moving Slowly!', 'hunger', 0);
+          } else if (stats.mood < 20) {
+            showCollectionFeedback('Sad - Moving Slowly!', 'mood', 0);
+          }
+        }
+        
+        const currentSpeed = baseSpeed * speedMultiplier;
+        
+        // Store old position for collision detection
+        const oldPlayerX = player.worldX;
+        const oldPlayerY = player.worldY;
+        
+        // Try to move (only if not sleeping) - arrow keys only
+        if (!player.sleeping) {
+          const oldX = player.worldX;
+          const oldY = player.worldY;
+          
+          if (keys["ArrowUp"]) player.worldY -= currentSpeed;
+          if (keys["ArrowDown"]) player.worldY += currentSpeed;
+          if (keys["ArrowLeft"]) player.worldX -= currentSpeed;
+          if (keys["ArrowRight"]) player.worldX += currentSpeed;
+          
+          // Check playa boundaries (prevent going outside trash fence)
+          const playerCenterX = player.worldX + player.w / 2;
+          const playerCenterY = player.worldY + player.h / 2;
+          const distanceFromCenter = Math.sqrt(playerCenterX * playerCenterX + playerCenterY * playerCenterY);
+          
+          if (distanceFromCenter > TRASH_FENCE_RADIUS - 20) {
+            // Push player back inside the fence
+            const maxDistance = TRASH_FENCE_RADIUS - 20;
+            const angle = Math.atan2(playerCenterY, playerCenterX);
+            player.worldX = Math.cos(angle) * maxDistance - player.w / 2;
+            player.worldY = Math.sin(angle) * maxDistance - player.h / 2;
+          }
+          
+          // Debug movement when riding bike
+          if (ridingBike && (oldX !== player.worldX || oldY !== player.worldY)) {
+            console.log('Bike movement - Old pos:', oldX, oldY, 'New pos:', player.worldX, player.worldY, 'Speed:', currentSpeed);
+          }
+        }
+        
+        // Check collision with art cars
+        artCars.forEach(car => {
+          if (car !== ridingArtCar) { // Don't collide with the car you're riding
+            if (player.worldX < car.x + car.w && 
+                player.worldX + player.w > car.x &&
+                player.worldY < car.y + car.h && 
+                player.worldY + player.h > car.y) {
+              
+              // Collision detected - revert movement
+              player.worldX = oldPlayerX;
+              player.worldY = oldPlayerY;
+            }
+          }
+        });
+        
+        // Update transport buttons when player moves
+        updateTransportButtons();
+      } else if (ridingArtCar) {
+        // When riding art car, allow movement on the car platform (only if not sleeping) - arrow keys only
+        if (ridingArtCar.playerOffset && !player.sleeping) {
+          if (keys["ArrowUp"]) ridingArtCar.playerOffset.y -= player.speed;
+          if (keys["ArrowDown"]) ridingArtCar.playerOffset.y += player.speed;
+          if (keys["ArrowLeft"]) ridingArtCar.playerOffset.x -= player.speed;
+          if (keys["ArrowRight"]) ridingArtCar.playerOffset.x += player.speed;
+        }
+      }
+
+      // Update camera to keep player centered
+      camera.x = player.worldX - player.screenX;
+      camera.y = player.worldY - player.screenY;
+      
+      // Generate new world content as player explores
+      generateWorldContent();
+      
+      // Update art cars
+      updateBikes();
+      updateArtCars();
+      
+      // Check coin collection (using world coordinates)
+      coins.forEach(coin => {
+        if (!coin.collected && 
+            player.worldX < coin.x + coin.w && 
+            player.worldX + player.w > coin.x &&
+            player.worldY < coin.y + coin.h && 
+            player.worldY + player.h > coin.y) {
+          coin.collected = true;
+          player.stats.coin += 1;
+          updateStatsDisplay();
+          showCombinedPickup('coin', 1);
+        }
+      });
+      
+      // Check MOOP collection
+      moop.forEach(item => {
+        if (!item.collected && 
+            player.worldX < item.x + item.w && 
+            player.worldX + player.w > item.x &&
+            player.worldY < item.y + item.h && 
+            player.worldY + player.h > item.y) {
+          item.collected = true;
+          
+          if (item.inventoryItem) {
+            // Add to inventory instead of giving karma
+            invPush(item.type);
+            showCollectionFeedback(`+${item.type}`, 'inventory', 0); // Show collection as inventory item
+            console.log(`Collected ${item.type}! Added to inventory.`);
+          } else {
+            // Give karma immediately for non-inventory items
+            applyEff(function(s) { s.karma += item.karmaValue; });
+            console.log(`Collected ${item.type}! (+${item.karmaValue} karma)`);
+            updateStatsDisplay();
+            showCollectionFeedback(`+${item.type}`, 'karma', item.karmaValue);
+          }
+        }
+      });
+      
+      // Check drug collection
+      drugs.forEach(drug => {
+        if (!drug.collected && 
+            player.worldX < drug.x + drug.w && 
+            player.worldX + player.w > drug.x &&
+            player.worldY < drug.y + drug.h && 
+            player.worldY + player.h > drug.y) {
+          drug.collected = true;
+          
+          // Apply immediate stat boosts if the drug has them
+          if (drug.moodBoost) {
+            player.stats.mood = Math.min(100, player.stats.mood + drug.moodBoost);
+          }
+          if (drug.energyBoost) {
+            player.stats.energy = Math.min(100, player.stats.energy + drug.energyBoost);
+          }
+          
+          // Handle special time effects
+          if (drug.timeMultiplier === 0) {
+            // Whip Its - stop time for 5 seconds
+            player.drugEffects.timeStopDuration = 5;
+          }
+          
+          // Add drug to active drugs array
+          player.drugEffects.activeDrugs.push({
+            name: drug.type,
+            speedMultiplier: drug.speedMultiplier,
+            hallucinating: drug.hallucinating,
+            duration: drug.duration,
+            startTime: Date.now(),
+            mysteryType: drug.mysteryType, // Include mystery type for display
+            timeMultiplier: drug.timeMultiplier
+          });
+          
+          console.log(`Took ${drug.type}! Speed: ${drug.speedMultiplier}x, Hallucinating: ${drug.hallucinating}, Duration: ${drug.duration} frames`);
+          updateDrugEffectsDisplay();
+          updateStatsDisplay();
+          
+          // Show mystery name when picking up, but reveal actual type when consumed
+          const displayName = drug.type.includes('Mystery') ? drug.type : drug.type;
+          showCollectionFeedback(`+${displayName}`, 'drug', drug.speedMultiplier);
+        }
+      });
+      
+      // Check water bottle collection
+      waterBottles.forEach(bottle => {
+        if (!bottle.collected && 
+            player.worldX < bottle.x + bottle.w && 
+            player.worldX + player.w > bottle.x &&
+            player.worldY < bottle.y + bottle.h && 
+            player.worldY + player.h > bottle.y) {
+          bottle.collected = true;
+          invPush('Water');
+          showCombinedPickup('water', 1);
+        }
+      });
+      
+      // Check snack collection
+      snacks.forEach(snack => {
+        if (!snack.collected && 
+            player.worldX < snack.x + snack.w && 
+            player.worldX + player.w > snack.x &&
+            player.worldY < snack.y + snack.h && 
+            player.worldY + player.h > snack.y) {
+          snack.collected = true;
+          // Use the specific food name instead of generic 'Snack'
+          invPush(snack.name || 'Snack');
+          showCollectionFeedback(`+${snack.name || 'Snack'}`, 'food', snack.hunger);
+        }
+      });
+      
+      // Stat decay over time
+      const now = Date.now();
+      if (now - lastStatDecay > statDecayInterval) {
+        player.stats.thirst = Math.max(0, player.stats.thirst - 2);
+        player.stats.hunger = Math.max(0, player.stats.hunger - 1.5);
+        player.stats.energy = Math.max(0, player.stats.energy - 1);
+        player.stats.mood = Math.max(0, player.stats.mood - 0.5);
+        
+        // Karma can go up or down based on other stats
+        if (player.stats.thirst < 10 || player.stats.hunger < 10) {
+          player.stats.karma = Math.max(0, player.stats.karma - 0.1); // Much slower decay rate
+        }
+        
+        lastStatDecay = now;
+        updateStatsDisplay();
+      }
+      
+      // Update drug effects (duration is now in hours, decrement every hour)
+      // This will be handled by the time system, not frame-by-frame
+      
+      // Update display every frame to show countdown
+      updateDrugEffectsDisplay();
+      
+      // Check for special location interactions
+      checkSpecialLocationInteractions();
+      
+      // Update day/night cycle
+      updateDayNightCycle();
+    }
+    
+    function updateDayNightCycle() {
+      const now = Date.now();
+      if (now - lastTimeUpdate > 1000) { // Update every second
+        lastTimeUpdate = now;
+        
+        // Debug: Log current time state
+        console.log('Time update - Current time:', player.time.day, player.time.hour, player.time.minute);
+        console.log('Time stop duration:', player.drugEffects.timeStopDuration);
+        console.log('Active drugs count:', player.drugEffects.activeDrugs.length);
+        
+        // Handle time stop (Whip Its effect)
+        if (player.drugEffects.timeStopDuration > 0) {
+          player.drugEffects.timeStopDuration--;
+          console.log('Time stopped, remaining:', player.drugEffects.timeStopDuration);
+          
+          // Safety check: if timeStopDuration is stuck for too long, reset it
+          if (player.drugEffects.timeStopDuration > 10) {
+            console.log('WARNING: timeStopDuration stuck, resetting to 0');
+            player.drugEffects.timeStopDuration = 0;
+          } else {
+            return; // Skip time progression while time is stopped
+          }
+        }
+        
+        // Calculate time multiplier from active drugs
+        let timeMultiplier = 1.0;
+        player.drugEffects.activeDrugs.forEach(drug => {
+          if (drug.timeMultiplier !== undefined && drug.timeMultiplier !== 0) {
+            timeMultiplier *= drug.timeMultiplier;
+          }
+        });
+        
+        // Ensure timeMultiplier is never 0 (which would freeze time)
+        if (timeMultiplier === 0) {
+          console.log('WARNING: Time multiplier is 0, setting to 0.1 to prevent freeze');
+          timeMultiplier = 0.1;
+        }
+        
+        // Debug logging
+        console.log('Time update - Active drugs:', player.drugEffects.activeDrugs.length);
+        console.log('Time multiplier:', timeMultiplier);
+        console.log('Time accumulator before:', player.drugEffects.timeAccumulator);
+        
+        // Advance time by 1 hour every second, modified by drug effects
+        const previousDay = player.time.day;
+        
+        // For time speed effects, we need to accumulate fractional time
+        if (!player.drugEffects.timeAccumulator) {
+          player.drugEffects.timeAccumulator = 0;
+        }
+        
+        player.drugEffects.timeAccumulator += timeMultiplier;
+        
+        // Only advance time when we've accumulated enough
+        while (player.drugEffects.timeAccumulator >= 1) {
+          player.drugEffects.timeAccumulator -= 1;
+          player.time.hour += 1;
+          
+          // Update lastTimeUpdate when hour actually advances
+          lastTimeUpdate = now;
+          
+          if (player.drugEffects.activeDrugs.length > 0) {
+            console.log('Time advanced! New hour:', player.time.hour, 'Day:', player.time.day);
+          }
+          
+          while (player.time.hour >= 24) { 
+            player.time.hour -= 24; 
+            player.time.day++; 
+            
+            // Update cooldowns when day advances
+            if (player.cooldowns.dance > 0) player.cooldowns.dance--;
+            if (player.cooldowns.climb > 0) player.cooldowns.climb--;
+            if (player.cooldowns.orgy > 0) player.cooldowns.orgy--;
+            if (player.cooldowns.chore > 0) player.cooldowns.chore--;
+            if (player.cooldowns.shop > 0) player.cooldowns.shop--;
+          }
+        }
+        
+        if (player.drugEffects.activeDrugs.length > 0) {
+          console.log('Time accumulator after:', player.drugEffects.timeAccumulator);
+        }
+        
+        // Announce new day at midnight (00:00) and update world population
+        if (player.time.day > previousDay && player.time.hour === 0) {
+          showDayAnnouncement(player.time.day);
+          lastAnnouncedDay = player.time.day;
+          
+          // Dynamic playa population based on timeline
+          if (player.time.day < MAN_BURN_DAY) {
+            // Growing population - reaches peak on Man Burn day
+            const daysToPeak = MAN_BURN_DAY - 1;
+            const progress = (player.time.day - 1) / daysToPeak;
+            worldPopulationMultiplier = 0.1 + (0.9 * progress); // 10% to 100%
+          } else if (player.time.day === MAN_BURN_DAY) {
+            // Peak population on Man Burn day
+            worldPopulationMultiplier = 1.0;
+          } else if (player.time.day <= TEMPLE_BURN_DAY + 2) {
+            // Decreasing population after Man Burn - empty over 3 days
+            const daysSinceBurn = player.time.day - MAN_BURN_DAY;
+            const declineRate = 0.33; // 33% decline per day
+            worldPopulationMultiplier = Math.max(0, 1.0 - (daysSinceBurn * declineRate));
+          } else {
+            // Completely empty after day 10
+            worldPopulationMultiplier = 0;
+          }
+          
+          // Check for game end on day 11
+          if (player.time.day === 11) {
+            setTimeout(() => {
+              endGame();
+            }, 2000); // Wait 2 seconds after the day 11 announcement
+          }
+        }
+        
+        // Update time display
+        updateTimeDisplay();
+        
+        // Update drug effects (decrement duration every hour)
+        player.drugEffects.activeDrugs = player.drugEffects.activeDrugs.filter(drug => {
+          drug.duration--;
+          return drug.duration > 0;
+        });
+        
+        // Update Man and Temple construction
+        updateStructures();
+        
+        // Handle post-Burn disappearing items
+        handlePostBurnDisappearing();
+        
+        // Apply gradual stat decay (much slower than action-based decay)
+        player.stats.hunger = Math.max(0, player.stats.hunger - 0.1);
+        player.stats.thirst = Math.max(0, player.stats.thirst - 0.15);
+        if (player.stats.thirst <= 20) player.stats.energy = Math.max(0, player.stats.energy - 0.05);
+        if (player.stats.hunger <= 20) player.stats.mood = Math.max(0, player.stats.mood - 0.05);
+        if (player.stats.energy <= 10) player.stats.mood = Math.max(0, player.stats.mood - 0.05);
+        
+        // Update stats display
+        updateStatsDisplay();
+      }
+      
+      // Update time display more frequently for smooth minute movement
+      updateTimeDisplay();
+    }
+    
+    function checkSpecialLocationInteractions() {
+      let playerInLocation = false;
+      
+      // Check dance floor collision
+      danceFloors.forEach(location => {
+        if (player.worldX < location.x + location.w && 
+            player.worldX + player.w > location.x &&
+            player.worldY < location.y + location.h && 
+            player.worldY + player.h > location.y) {
+          // Player is on dance floor - auto-trigger dance if not on cooldown
+          if (player.cooldowns.dance === 0) {
+            actions.dance();
+          } else {
+            showLocationAction('dance', location.name);
+          }
+          playerInLocation = true;
+        }
+      });
+      
+      // Check art installation collision
+      artInstallations.forEach(location => {
+        if (player.worldX < location.x + location.w && 
+            player.worldX + player.w > location.x &&
+            player.worldY < location.y + location.h && 
+            player.worldY + player.h > location.y) {
+          // Player is at art installation - auto-trigger climb if not on cooldown
+          if (player.cooldowns.climb === 0) {
+            actions.climb();
+          } else {
+            showLocationAction('climb', location.name);
+          }
+          playerInLocation = true;
+        }
+      });
+      
+      // Check orgy dome collision
+      orgyDomes.forEach(location => {
+        if (player.worldX < location.x + location.w && 
+            player.worldX + player.w > location.x &&
+            player.worldY < location.y + location.h && 
+            player.worldY + player.h > location.y) {
+          // Player is at orgy dome - show orgy action button
+          showLocationAction('orgy', location.name);
+          playerInLocation = true;
+        }
+      });
+      
+      // Check home camp collision
+      homeCamps.forEach(location => {
+        if (player.worldX < location.x + location.w && 
+            player.worldX + player.w > location.x &&
+            player.worldY < location.y + location.h && 
+            player.worldY + player.h > location.y) {
+          // Player is at home camp - show chore action button
+          showLocationAction('chore', location.name);
+          playerInLocation = true;
+        }
+      });
+      
+      // Check center camp collision
+      centerCamps.forEach(location => {
+        if (player.worldX < location.x + location.w && 
+            player.worldX + player.w > location.x &&
+            player.worldY < location.y + location.h && 
+            player.worldY + player.h > location.y) {
+          // Player is at center camp - show shop action button
+          showLocationAction('shop', location.name);
+          playerInLocation = true;
+        }
+      });
+      
+      // Hide location actions if player is not in any location
+      if (!playerInLocation) {
+        hideLocationActions();
+      }
+    }
+    
+    function showLocationAction(actionType, locationName) {
+      const locationActions = document.getElementById('location-actions');
+      const locationActionBtn = document.getElementById('location-action-btn');
+      
+      if (locationActions && locationActionBtn) {
+        // Set the button text and action
+        const actionTexts = {
+          'dance': '💃 Dance Here',
+          'climb': '🎨 Climb Art',
+          'orgy': '🏕️ Join Orgy',
+          'chore': '🏠 Do Chores',
+          'shop': '🏛️ Shop at Center Camp'
+        };
+        
+        locationActionBtn.textContent = actionTexts[actionType] || 'Action';
+        locationActionBtn.setAttribute('data-action', actionType);
+        
+        // Show the location actions
+        locationActions.style.display = 'block';
+        
+        console.log(`At ${locationName} - can perform ${actionType}`);
+      }
+    }
+    
+    function hideLocationActions() {
+      const locationActions = document.getElementById('location-actions');
+      if (locationActions) {
+        locationActions.style.display = 'none';
+      }
+    }
+
+    function drawWombat(x, y, w, h) {
+      // Player is always drawn at screen center
+      const screenX = player.screenX;
+      const screenY = player.screenY;
+      
+      // Draw wombat body (rounded rectangle)
+      ctx.fillStyle = player.color;
+      ctx.fillRect(screenX, screenY, w, h);
+      
+      // Draw wombat face
+      ctx.fillStyle = "#fff";
+      if (player.sleeping) {
+        // Draw X eyes when sleeping
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 2;
+        
+        // Left eye X
+        ctx.beginPath();
+        ctx.moveTo(screenX + 8, screenY + 8);
+        ctx.lineTo(screenX + 14, screenY + 14);
+        ctx.moveTo(screenX + 14, screenY + 8);
+        ctx.lineTo(screenX + 8, screenY + 14);
+        ctx.stroke();
+        
+        // Right eye X
+        ctx.beginPath();
+        ctx.moveTo(screenX + 18, screenY + 8);
+        ctx.lineTo(screenX + 24, screenY + 14);
+        ctx.moveTo(screenX + 24, screenY + 8);
+        ctx.lineTo(screenX + 18, screenY + 14);
+        ctx.stroke();
+      } else {
+        // Draw open eyes when awake
+        ctx.fillRect(screenX + 8, screenY + 8, 6, 6); // eye
+        ctx.fillRect(screenX + 18, screenY + 8, 6, 6); // eye
+      }
+      
+      // Draw nose
+      ctx.fillStyle = "#000";
+      ctx.fillRect(screenX + 14, screenY + 16, 4, 4);
+      
+      // Draw ears
+      ctx.fillStyle = player.color;
+      ctx.fillRect(screenX - 2, screenY - 2, 8, 8);
+      ctx.fillRect(screenX + w - 6, screenY - 2, 8, 8);
+    }
+
+    function drawDecorations() {
+      decorations.forEach(decoration => {
+        const screenX = decoration.x - camera.x;
+        const screenY = decoration.y - camera.y;
+        
+        // Only draw if on screen
+        if (screenX > -decoration.w && screenX < canvas.width && 
+            screenY > -decoration.h && screenY < canvas.height) {
+          ctx.fillStyle = decoration.color;
+          ctx.fillRect(screenX, screenY, decoration.w, decoration.h);
+          
+          // Add some sparkle effect
+          ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+          ctx.fillRect(screenX + decoration.w/2 - 1, screenY + decoration.h/2 - 1, 2, 2);
+        }
+      });
+    }
+    
+    function drawCoins() {
+      coins.forEach(coin => {
+        if (!coin.collected) {
+          const screenX = coin.x - camera.x;
+          const screenY = coin.y - camera.y;
+          
+          // Only draw if on screen
+          if (screenX > -coin.w && screenX < canvas.width && 
+              screenY > -coin.h && screenY < canvas.height) {
+            ctx.fillStyle = "#ffd700";
+            ctx.fillRect(screenX, screenY, coin.w, coin.h);
+            
+            // Add sparkle effect
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(screenX + coin.w/2 - 1, screenY + coin.h/2 - 1, 2, 2);
+          }
+        }
+      });
+    }
+    
+    function drawWaterBottles() {
+      waterBottles.forEach(bottle => {
+        if (!bottle.collected) {
+          const screenX = bottle.x - camera.x;
+          const screenY = bottle.y - camera.y;
+          
+          // Only draw if on screen
+          if (screenX > -bottle.w && screenX < canvas.width && 
+              screenY > -bottle.h && screenY < canvas.height) {
+            // Draw water bottle (blue rectangle with cap)
+            ctx.fillStyle = "#00bfff";
+            ctx.fillRect(screenX, screenY + 2, bottle.w, bottle.h - 4);
+            
+            // Draw cap
+            ctx.fillStyle = "#ff6b35";
+            ctx.fillRect(screenX, screenY, bottle.w, 4);
+            
+            // Add sparkle
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(screenX + bottle.w/2 - 1, screenY + bottle.h/2 - 1, 2, 2);
+          }
+        }
+      });
+    }
+    
+    function drawSnacks() {
+      snacks.forEach(snack => {
+        if (!snack.collected) {
+          const screenX = snack.x - camera.x;
+          const screenY = snack.y - camera.y;
+          
+          // Only draw if on screen
+          if (screenX > -snack.w && screenX < canvas.width && 
+              screenY > -snack.h && screenY < canvas.height) {
+            
+            // Draw food background
+            ctx.fillStyle = snack.color || "#8B4513";
+            ctx.fillRect(screenX, screenY, snack.w, snack.h);
+            
+            // Add border
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(screenX, screenY, snack.w, snack.h);
+            
+            // Draw emoji
+            ctx.font = "12px Arial";
+            ctx.fillStyle = "#000";
+            ctx.textAlign = "center";
+            ctx.fillText(snack.emoji || "🍎", screenX + snack.w/2, screenY + snack.h/2 + 4);
+            
+            // Add sparkle
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(screenX + snack.w - 4, screenY + 2, 2, 2);
+          }
+        }
+      });
+    }
+    
+    function drawBikes() {
+      bikes.forEach(bike => {
+        if (!bike.collected) {
+          const screenX = bike.x - camera.x;
+          const screenY = bike.y - camera.y;
+          
+          // Only draw if on screen
+          if (screenX > -bike.w && screenX < canvas.width && 
+              screenY > -bike.h && screenY < canvas.height) {
+            
+            // Draw bike emoji (2x larger)
+            ctx.font = '44px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🚲', screenX + bike.w/2, screenY + bike.h/2 + 16);
+            
+            // Boarding instructions now handled by buttons
+            
+            // Show riding indicator if player is on this bike
+            if (ridingBike === bike) {
+              ctx.fillStyle = "#ffd700";
+              ctx.fillRect(screenX + bike.w/2 - 4, screenY + bike.h + 10, 8, 8);
+              // Dismount instructions now handled by buttons
+            }
+          }
+        }
+      });
+    }
+    
+    function drawMoop() {
+      moop.forEach(item => {
+        if (!item.collected) {
+          const screenX = item.x - camera.x;
+          const screenY = item.y - camera.y;
+          
+          // Only draw if on screen
+          if (screenX > -item.w && screenX < canvas.width && 
+              screenY > -item.h && screenY < canvas.height) {
+            
+            // Draw MOOP item with emoji
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(item.emoji, screenX + item.w/2, screenY + item.h/2 + 4);
+          }
+        }
+      });
+    }
+    
+    function drawDrugs() {
+      drugs.forEach(drug => {
+        if (!drug.collected) {
+          const screenX = drug.x - camera.x;
+          const screenY = drug.y - camera.y;
+          
+          // Only draw if on screen
+          if (screenX > -drug.w && screenX < canvas.width && 
+              screenY > -drug.h && screenY < canvas.height) {
+            
+            // Create pulsing and glowing effect
+            const pulse = Math.sin(Date.now() * 0.005) * 0.3 + 1;
+            const glowIntensity = Math.sin(Date.now() * 0.008) * 0.5 + 0.5;
+            
+            // Draw glow effect (multiple layers for intensity)
+            ctx.save();
+            ctx.shadowColor = '#8a2be2';
+            ctx.shadowBlur = 15 + glowIntensity * 10;
+            
+            // Draw outer glow ring
+            ctx.beginPath();
+            ctx.arc(screenX + drug.w/2, screenY + drug.h/2, 15 + pulse * 3, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(138, 43, 226, ${0.1 + glowIntensity * 0.1})`;
+            ctx.fill();
+            
+            // Draw inner glow
+            ctx.beginPath();
+            ctx.arc(screenX + drug.w/2, screenY + drug.h/2, 8 + pulse * 2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(138, 43, 226, ${0.2 + glowIntensity * 0.2})`;
+            ctx.fill();
+            
+            // Draw drug emoji with larger size and glow
+            ctx.font = `${20 * pulse}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(drug.emoji, screenX + drug.w/2, screenY + drug.h/2 + 6);
+            
+            ctx.restore();
+          }
+        }
+      });
+    }
+
+    function drawSpecialLocations() {
+      // Draw dance floors
+      danceFloors.forEach(location => {
+        const screenX = location.x - camera.x;
+        const screenY = location.y - camera.y;
+        
+        if (screenX > -location.w && screenX < canvas.width && 
+            screenY > -location.h && screenY < canvas.height) {
+          
+          // Draw dance floor with pulsing effect
+          const pulse = Math.sin(Date.now() * 0.008) * 0.1 + 1;
+          ctx.fillStyle = `rgba(255, 20, 147, ${0.3 * pulse})`;
+          ctx.fillRect(screenX, screenY, location.w, location.h);
+          
+          // Draw emoji in center
+          ctx.font = `${24 * pulse}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.fillText(location.emoji, screenX + location.w/2, screenY + location.h/2 + 8);
+          
+          // Draw name label
+          ctx.font = '12px Arial';
+          ctx.fillStyle = '#fff';
+          ctx.fillText(location.name, screenX + location.w/2, screenY + location.h + 15);
+        }
+      });
+      
+      // Draw art installations
+      artInstallations.forEach(location => {
+        const screenX = location.x - camera.x;
+        const screenY = location.y - camera.y;
+        
+        if (screenX > -location.w && screenX < canvas.width && 
+            screenY > -location.h && screenY < canvas.height) {
+          
+          // Draw art installation
+          ctx.fillStyle = 'rgba(255, 215, 0, 0.4)';
+          ctx.fillRect(screenX, screenY, location.w, location.h);
+          
+          // Draw emoji in center
+          ctx.font = '20px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(location.emoji, screenX + location.w/2, screenY + location.h/2 + 6);
+          
+          // Draw name label
+          ctx.font = '12px Arial';
+          ctx.fillStyle = '#fff';
+          ctx.fillText(location.name, screenX + location.w/2, screenY + location.h + 15);
+        }
+      });
+      
+      // Draw orgy domes
+      orgyDomes.forEach(location => {
+        const screenX = location.x - camera.x;
+        const screenY = location.y - camera.y;
+        
+        if (screenX > -location.w && screenX < canvas.width && 
+            screenY > -location.h && screenY < canvas.height) {
+          
+          // Draw orgy dome with subtle glow
+          ctx.fillStyle = 'rgba(138, 43, 226, 0.3)';
+          ctx.fillRect(screenX, screenY, location.w, location.h);
+          
+          // Draw emoji in center
+          ctx.font = '22px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(location.emoji, screenX + location.w/2, screenY + location.h/2 + 7);
+          
+          // Draw name label
+          ctx.font = '12px Arial';
+          ctx.fillStyle = '#fff';
+          ctx.fillText(location.name, screenX + location.w/2, screenY + location.h + 15);
+        }
+      });
+      
+      // Draw home camps
+      homeCamps.forEach(location => {
+        const screenX = location.x - camera.x;
+        const screenY = location.y - camera.y;
+        
+        if (screenX > -location.w && screenX < canvas.width && 
+            screenY > -location.h && screenY < canvas.height) {
+          
+          // Draw home camp
+          ctx.fillStyle = 'rgba(139, 69, 19, 0.4)';
+          ctx.fillRect(screenX, screenY, location.w, location.h);
+          
+          // Draw emoji in center
+          ctx.font = '24px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(location.emoji, screenX + location.w/2, screenY + location.h/2 + 8);
+          
+          // Draw name label
+          ctx.font = '12px Arial';
+          ctx.fillStyle = '#fff';
+          ctx.fillText(location.name, screenX + location.w/2, screenY + location.h + 15);
+        }
+      });
+      
+      // Draw center camps
+      centerCamps.forEach(location => {
+        const screenX = location.x - camera.x;
+        const screenY = location.y - camera.y;
+        
+        if (screenX > -location.w && screenX < canvas.width && 
+            screenY > -location.h && screenY < canvas.height) {
+          
+          // Draw center camp with golden glow
+          const pulse = Math.sin(Date.now() * 0.005) * 0.2 + 1;
+          ctx.fillStyle = `rgba(255, 215, 0, ${0.4 * pulse})`;
+          ctx.fillRect(screenX, screenY, location.w, location.h);
+          
+          // Draw emoji in center
+          ctx.font = `${22 * pulse}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.fillText(location.emoji, screenX + location.w/2, screenY + location.h/2 + 7);
+          
+          // Draw name label
+          ctx.font = '12px Arial';
+          ctx.fillStyle = '#fff';
+          ctx.fillText(location.name, screenX + location.w/2, screenY + location.h + 15);
+        }
+      });
+    }
+
+    function drawArtCars() {
+      artCars.forEach(car => {
+        const screenX = car.x - camera.x;
+        const screenY = car.y - camera.y;
+        
+        // Only draw if on screen
+        if (screenX > -car.w && screenX < canvas.width && 
+            screenY > -car.h && screenY < canvas.height) {
+          
+          // Draw art car body (platform) with design-specific styling
+          ctx.fillStyle = car.color;
+          ctx.fillRect(screenX, screenY, car.w, car.h);
+          
+          // Draw design-specific details
+          switch(car.design) {
+            case "bus":
+              // Bus design - rectangular with windows
+              ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+              for (let i = 0; i < 4; i++) {
+                ctx.fillRect(screenX + 50 + i * (car.w - 100) / 4, screenY + 50, (car.w - 150) / 4, 60);
+              }
+              break;
+            case "ship":
+              // Ship design - curved bow
+              ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+              ctx.beginPath();
+              ctx.arc(screenX + car.w * 0.7, screenY + car.h/2, car.w * 0.3, 0, Math.PI, true);
+              ctx.fill();
+              break;
+            case "whale":
+              // Whale design - rounded and elongated
+              ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+              ctx.beginPath();
+              ctx.ellipse(screenX + car.w/2, screenY + car.h/2, car.w/2, car.h/2, 0, 0, 2 * Math.PI);
+              ctx.fill();
+              break;
+            case "cat":
+              // Cat design - triangular ears
+              ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+              ctx.beginPath();
+              ctx.moveTo(screenX + car.w/2, screenY + 30);
+              ctx.lineTo(screenX + car.w/2 - 40, screenY + 80);
+              ctx.lineTo(screenX + car.w/2 + 40, screenY + 80);
+              ctx.closePath();
+              ctx.fill();
+              break;
+            case "dragon":
+              // Dragon design - spikes
+              ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+              for (let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.moveTo(screenX + 50 + i * (car.w - 100) / 4, screenY + 30);
+                ctx.lineTo(screenX + 70 + i * (car.w - 100) / 4, screenY + 80);
+                ctx.lineTo(screenX + 30 + i * (car.w - 100) / 4, screenY + 80);
+                ctx.closePath();
+                ctx.fill();
+              }
+              break;
+            case "turtle":
+              // Turtle design - hexagonal shell
+              ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+              ctx.beginPath();
+              ctx.moveTo(screenX + car.w/2, screenY + 50);
+              ctx.lineTo(screenX + car.w - 50, screenY + car.h/2);
+              ctx.lineTo(screenX + car.w/2, screenY + car.h - 50);
+              ctx.lineTo(screenX + 50, screenY + car.h/2);
+              ctx.closePath();
+              ctx.fill();
+              break;
+            case "phoenix":
+              // Phoenix design - flame patterns
+              ctx.fillStyle = "rgba(255, 100, 0, 0.4)";
+              for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.arc(screenX + car.w/2 + (i-1) * 60, screenY + 100, 40, 0, Math.PI);
+                ctx.fill();
+              }
+              break;
+            case "octopus":
+              // Octopus design - circular with tentacles
+              ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+              ctx.beginPath();
+              ctx.arc(screenX + car.w/2, screenY + car.h/2, car.w/3, 0, 2 * Math.PI);
+              ctx.fill();
+              // Tentacles
+              for (let i = 0; i < 4; i++) {
+                ctx.fillRect(screenX + car.w/2 - 20 + i * 40, screenY + car.h - 50, 20, 50);
+              }
+              break;
+          }
+          
+          // Draw platform surface pattern
+          ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+          for (let i = 0; i < car.w; i += 40) {
+            ctx.fillRect(screenX + i, screenY, 2, car.h);
+          }
+          for (let i = 0; i < car.h; i += 20) {
+            ctx.fillRect(screenX, screenY + i, car.w, 2);
+          }
+          
+          // Add wheels (scaled to car size)
+          const wheelSize = Math.min(car.w, car.h) / 8;
+          ctx.fillStyle = "#333";
+          ctx.fillRect(screenX + wheelSize, screenY - wheelSize/2, wheelSize * 2, wheelSize);
+          ctx.fillRect(screenX + car.w - wheelSize * 3, screenY - wheelSize/2, wheelSize * 2, wheelSize);
+          ctx.fillRect(screenX + wheelSize, screenY + car.h - wheelSize/2, wheelSize * 2, wheelSize);
+          ctx.fillRect(screenX + car.w - wheelSize * 3, screenY + car.h - wheelSize/2, wheelSize * 2, wheelSize);
+          
+          // Add decorative elements
+          ctx.fillStyle = "#ffd700";
+          ctx.fillRect(screenX + 20, screenY + 20, 40, 40);
+          ctx.fillRect(screenX + car.w - 60, screenY + 20, 40, 40);
+          
+          // Add sparkle effects
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(screenX + car.w/2 - 10, screenY + car.h/2 - 10, 20, 20);
+          ctx.fillRect(screenX + 150, screenY + 100, 10, 10);
+          ctx.fillRect(screenX + car.w - 150, screenY + 100, 10, 10);
+          
+          // Boarding instructions now handled by buttons
+          
+          // Add lights at night
+          const isNight = player.time.hour >= 18 || player.time.hour < 6;
+          if (isNight) {
+            // Add LED strip lights around the car
+            ctx.fillStyle = "#00ffff"; // Cyan LED color
+            ctx.fillRect(screenX, screenY - 5, car.w, 3); // Top
+            ctx.fillRect(screenX, screenY + car.h + 2, car.w, 3); // Bottom
+            ctx.fillRect(screenX - 5, screenY, 3, car.h); // Left
+            ctx.fillRect(screenX + car.w + 2, screenY, 3, car.h); // Right
+            
+            // Add pulsing center light
+            const pulse = Math.sin(Date.now() * 0.005) * 0.3 + 0.7;
+            ctx.fillStyle = `rgba(255, 255, 0, ${pulse})`;
+            ctx.fillRect(screenX + car.w/2 - 15, screenY + car.h/2 - 15, 30, 30);
+            
+            // Add corner lights
+            ctx.fillStyle = "#ff0000"; // Red corner lights
+            ctx.fillRect(screenX + 10, screenY + 10, 8, 8);
+            ctx.fillRect(screenX + car.w - 18, screenY + 10, 8, 8);
+            ctx.fillRect(screenX + 10, screenY + car.h - 18, 8, 8);
+            ctx.fillRect(screenX + car.w - 18, screenY + car.h - 18, 8, 8);
+          }
+          
+          // Show riding indicator if player is riding this car
+          if (ridingArtCar === car) {
+            ctx.fillStyle = "#ffd700";
+            ctx.fillRect(screenX + car.w/2 - 10, screenY + car.h + 10, 20, 20);
+            // Draw car name
+            ctx.fillStyle = "#fff";
+            ctx.font = "16px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(car.name, screenX + car.w/2, screenY + car.h + 45);
+            // Dismount instructions now handled by buttons
+          }
+        }
+      });
+    }
+    
+    function updateStatsDisplay() {
+      document.getElementById('thirst-bar').style.width = player.stats.thirst + '%';
+      document.getElementById('thirst-value').textContent = Math.round(player.stats.thirst);
+      
+      document.getElementById('hunger-bar').style.width = player.stats.hunger + '%';
+      document.getElementById('hunger-value').textContent = Math.round(player.stats.hunger);
+      
+      document.getElementById('energy-bar').style.width = player.stats.energy + '%';
+      document.getElementById('energy-value').textContent = Math.round(player.stats.energy);
+      
+      // Add visual indicators for low stats (speed penalties)
+      const energyBar = document.getElementById('energy-bar');
+      const thirstBar = document.getElementById('thirst-bar');
+      const hungerBar = document.getElementById('hunger-bar');
+      const moodBar = document.getElementById('mood-bar');
+      
+      // Energy indicator
+      if (player.stats.energy < 20) {
+        energyBar.style.backgroundColor = '#ff4757';
+        energyBar.style.boxShadow = '0 0 10px rgba(255, 71, 87, 0.5)';
+      } else {
+        energyBar.style.backgroundColor = '#2ed573';
+        energyBar.style.boxShadow = 'none';
+      }
+      
+      // Thirst indicator
+      if (player.stats.thirst < 20) {
+        thirstBar.style.backgroundColor = '#ff4757';
+        thirstBar.style.boxShadow = '0 0 10px rgba(255, 71, 87, 0.5)';
+      } else {
+        thirstBar.style.backgroundColor = '#00bcd4';
+        thirstBar.style.boxShadow = 'none';
+      }
+      
+      // Hunger indicator
+      if (player.stats.hunger < 20) {
+        hungerBar.style.backgroundColor = '#ff4757';
+        hungerBar.style.boxShadow = '0 0 10px rgba(255, 71, 87, 0.5)';
+      } else {
+        hungerBar.style.backgroundColor = '#ff9800';
+        hungerBar.style.boxShadow = 'none';
+      }
+      
+      // Mood indicator
+      if (player.stats.mood < 20) {
+        moodBar.style.backgroundColor = '#ff4757';
+        moodBar.style.boxShadow = '0 0 10px rgba(255, 71, 87, 0.5)';
+      } else {
+        moodBar.style.backgroundColor = '#e91e63';
+        moodBar.style.boxShadow = 'none';
+      }
+      
+      document.getElementById('mood-bar').style.width = player.stats.mood + '%';
+      document.getElementById('mood-value').textContent = Math.round(player.stats.mood);
+      
+      document.getElementById('karma-amount').textContent = Math.round(player.stats.karma);
+      
+      document.getElementById('coin-amount').textContent = player.stats.coin;
+      
+      // Calculate and display current speed multiplier (includes bike and drugs)
+      let totalSpeedMultiplier = 1;
+      
+      // Add bike speed multiplier if riding a bike
+      if (ridingBike) {
+        totalSpeedMultiplier *= 1.5;
+      }
+      
+      // Add drug speed multipliers
+      player.drugEffects.activeDrugs.forEach(drug => {
+        if (drug.speedMultiplier !== undefined && !isNaN(drug.speedMultiplier)) {
+          totalSpeedMultiplier *= drug.speedMultiplier;
+        }
+      });
+      
+      // Calculate and display current time perception multiplier
+      let totalTimeMultiplier = 1;
+      player.drugEffects.activeDrugs.forEach(drug => {
+        if (drug.timeMultiplier !== undefined && !isNaN(drug.timeMultiplier)) {
+          totalTimeMultiplier *= drug.timeMultiplier;
+        }
+      });
+      
+      // Update speed display
+      const speedDisplay = document.getElementById('speed-display');
+      if (speedDisplay) {
+        const speedIcon = totalSpeedMultiplier > 1 ? '⚡' : (totalSpeedMultiplier < 1 ? '🐌' : '🚶');
+        const speedColor = totalSpeedMultiplier > 1 ? '#00ff88' : (totalSpeedMultiplier < 1 ? '#ff6b35' : '#ffffff');
+        speedDisplay.innerHTML = `${speedIcon} <span style="color: ${speedColor};">${totalSpeedMultiplier.toFixed(1)}x</span>`;
+      }
+      
+      // Update time perception display
+      const timeDisplay = document.getElementById('time-perception-display');
+      if (timeDisplay) {
+        let timeIcon = '⏰';
+        let timeColor = '#ffffff';
+        
+        if (totalTimeMultiplier === 0) {
+          timeIcon = '⏸️';
+          timeColor = '#ff0000';
+        } else if (totalTimeMultiplier > 1) {
+          timeIcon = '⏩';
+          timeColor = '#00ff88';
+        } else if (totalTimeMultiplier < 1) {
+          timeIcon = '⏪';
+          timeColor = '#ff6b35';
+        }
+        
+        const timeText = totalTimeMultiplier === 0 ? 'STOPPED' : `${totalTimeMultiplier.toFixed(1)}x`;
+        timeDisplay.innerHTML = `${timeIcon} <span style="color: ${timeColor};">${timeText}</span>`;
+      }
+    }
+    
+    function updateTimeDisplay() {
+      const hh = String(player.time.hour).padStart(2, '0');
+      
+      // Calculate time multiplier from active drugs
+      let timeMultiplier = 1.0;
+      player.drugEffects.activeDrugs.forEach(drug => {
+        if (drug.timeMultiplier !== undefined && drug.timeMultiplier !== 0) {
+          timeMultiplier *= drug.timeMultiplier;
+        }
+      });
+      
+      // Handle time stop (Whip Its effect)
+      if (player.drugEffects.timeStopDuration > 0) {
+        timeMultiplier = 0; // Time is stopped
+      }
+      
+      // Calculate animated minutes based on how far through the hour we are
+      const now = Date.now();
+      const secondsSinceLastHour = (now - lastTimeUpdate) / 1000;
+      
+      // Apply time multiplier to the animation speed
+      const effectiveSecondsPerMinute = 1 / Math.max(timeMultiplier, 0.1); // Prevent division by zero
+      const animatedMinutes = Math.floor((secondsSinceLastHour / effectiveSecondsPerMinute) * 60);
+      const mm = String(Math.min(animatedMinutes, 59)).padStart(2, '0');
+      
+      // Calculate day of the week (Burning Man starts on Saturday, Day 1)
+      const daysOfWeek = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+      const dayOfWeek = daysOfWeek[(player.time.day - 1) % 7];
+      
+      // Determine time of day
+      let timeOfDay = '';
+      if (player.time.hour >= 6 && player.time.hour < 12) {
+        timeOfDay = '🌅 Morning';
+      } else if (player.time.hour >= 12 && player.time.hour < 18) {
+        timeOfDay = '☀️ Day';
+      } else if (player.time.hour >= 18 && player.time.hour < 22) {
+        timeOfDay = '🌆 Evening';
+      } else {
+        timeOfDay = '🌙 Night';
+      }
+      
+      // Burning Man timeline info
+      let timelineInfo = '';
+      if (player.time.day <= BURNING_MAN_DURATION) {
+        const daysToMan = MAN_BURN_DAY - player.time.day;
+        const daysToTemple = TEMPLE_BURN_DAY - player.time.day;
+        
+        if (daysToMan > 0) {
+          timelineInfo = ` • ${daysToMan} days to Man Burn`;
+        } else if (player.time.day === MAN_BURN_DAY) {
+          timelineInfo = ' • 🔥 MAN BURNS TONIGHT!';
+        } else if (daysToTemple > 0) {
+          timelineInfo = ` • ${daysToTemple} days to Temple Burn`;
+        } else if (player.time.day === TEMPLE_BURN_DAY) {
+          timelineInfo = ' • 🔥 TEMPLE BURNS TONIGHT!';
+        } else {
+          timelineInfo = ' • Burning Man Complete';
+        }
+      }
+      
+      // Add time speed indicator
+      let timeSpeedIndicator = '';
+      if (timeMultiplier === 0) {
+        timeSpeedIndicator = ' ⏸️ STOPPED';
+      } else if (timeMultiplier < 1) {
+        timeSpeedIndicator = ` ⏪ ${timeMultiplier.toFixed(1)}x`;
+      } else if (timeMultiplier > 1) {
+        timeSpeedIndicator = ` ⏩ ${timeMultiplier.toFixed(1)}x`;
+      }
+      
+      document.getElementById('time-display').textContent = `Day ${player.time.day} (${dayOfWeek}) • ${hh}:${mm} ${timeOfDay}${timeSpeedIndicator}${timelineInfo}`;
+    }
+    
+    function updateInventoryDisplay() {
+      const list = document.getElementById('inventory-list');
+      list.innerHTML = '';
+      
+      // Define food items with their effects
+      const foodEffects = {
+        'Grilled Cheese': { hunger: 25, mood: 8, emoji: '🧀' },
+        'Veggie Burger': { hunger: 35, mood: 10, emoji: '🍔' },
+        'Fruit Salad': { hunger: 20, mood: 6, emoji: '🥗' },
+        'Energy Bar': { hunger: 15, mood: 4, emoji: '🍫' },
+        'Pizza Slice': { hunger: 30, mood: 12, emoji: '🍕' },
+        'Smoothie': { hunger: 18, mood: 5, emoji: '🥤' }
+      };
+      
+      // Define clothing and trinket items with their effects
+      const giftableItems = {
+        'Clothing': { mood: 15, energy: 10, emoji: '👕' },
+        'Trinket': { mood: 12, energy: 8, emoji: '✨' }
+      };
+      
+      Object.keys(player.inventory).forEach(itemName => {
+        const quantity = player.inventory[itemName];
+        const div = document.createElement('div');
+        div.className = 'inventory-item';
+        
+        // Add emoji, values, and hotkeys for different item types
+        let displayName = itemName;
+        let hotkey = '';
+        
+        // Define hotkeys for each item
+        const itemHotkeys = {
+          'Water': 'W',
+          'Trinket': 'T',
+          'Clothing': 'C',
+          'Grilled Cheese': 'J',
+          'Veggie Burger': 'V',
+          'Fruit Salad': 'F',
+          'Energy Bar': 'E',
+          'Pizza Slice': 'P',
+          'Smoothie': 'S'
+        };
+        
+        if (foodEffects[itemName]) {
+          const effect = foodEffects[itemName];
+          hotkey = itemHotkeys[itemName] || '';
+          displayName = `${effect.emoji} ${itemName} (+${effect.hunger} hunger)`;
+        } else if (giftableItems[itemName]) {
+          const effect = giftableItems[itemName];
+          hotkey = itemHotkeys[itemName] || '';
+          displayName = `${effect.emoji} ${itemName} (+${effect.mood} mood, +${effect.energy} energy)`;
+        } else if (itemName === 'Water') {
+          hotkey = itemHotkeys[itemName] || '';
+          displayName = `💧 ${itemName} (+35 thirst)`;
+        }
+        
+        // Add hotkey to display name
+        if (hotkey) {
+          displayName = `[${hotkey}] ${displayName}`;
+        }
+        
+        div.innerHTML = `
+          <span>${displayName}</span>
+          <span class="quantity">${quantity}</span>
+        `;
+        
+        // Add click functionality - items now auto-use themselves
+        div.addEventListener('click', () => {
+          if (itemName === 'Water') {
+            if (!useItem('Water', function(s) { s.thirst += 35; s.mood += 3; })) {
+              alert('No water left.');
+            }
+          } else if (foodEffects[itemName]) {
+            const effect = foodEffects[itemName];
+            if (!useItem(itemName, function(s) { 
+              s.hunger += effect.hunger; 
+              s.mood += effect.mood; 
+            })) {
+              alert(`No ${itemName.toLowerCase()} left.`);
+            }
+          } else if (giftableItems[itemName]) {
+            const effect = giftableItems[itemName];
+            // Auto-use the item for personal benefit
+            if (!useItem(itemName, function(s) { 
+              s.mood += effect.mood; 
+              s.energy += effect.energy; 
+            })) {
+              alert(`No ${itemName.toLowerCase()} left.`);
+            }
+          }
+        });
+        
+        list.appendChild(div);
+      });
+    }
+    
+    function updateDrugEffectsDisplay() {
+      const panel = document.getElementById('drug-effects-panel');
+      const list = document.getElementById('drug-effects-list');
+      const countdownOverlay = document.getElementById('drug-countdown-overlay');
+      const countdownText = document.getElementById('countdown-text');
+      
+      // Clear existing effects
+      list.innerHTML = '';
+      
+      // Show panel only if there are active effects
+      if (player.drugEffects.activeDrugs.length > 0) {
+        panel.style.display = 'block';
+        
+        // Show stacked countdown overlay for all active drugs
+        const drugCountdowns = player.drugEffects.activeDrugs.map(drug => {
+          const displayName = drug.name.includes('Mystery') ? 
+            (drug.mysteryType || drug.name) : drug.name;
+          return `💊 ${displayName}: ${drug.duration}h`;
+        }).join(' | ');
+        
+        countdownText.textContent = drugCountdowns;
+        countdownOverlay.style.display = 'block';
+        
+        // Add each active drug
+        player.drugEffects.activeDrugs.forEach(drug => {
+          
+          // Add speed effect if active
+          if (drug.speedMultiplier !== 1) {
+            const speedDiv = document.createElement('div');
+            speedDiv.className = 'drug-effect-item';
+            
+            const speedIcon = drug.speedMultiplier > 1 ? '⚡' : '🐌';
+            // Show the actual drug type (revealed when consumed) or mystery name
+            const displayName = drug.name.includes('Mystery') ? 
+              (drug.mysteryType || drug.name) : drug.name;
+            const speedText = drug.speedMultiplier > 1 ? 
+              `${displayName} Speed (${drug.speedMultiplier}x)` : 
+              `${displayName} Slow (${drug.speedMultiplier}x)`;
+            const speedColor = drug.speedMultiplier > 1 ? '#00ff88' : '#ff6b35';
+            
+            speedDiv.innerHTML = `
+              <div class="drug-effect-icon">${speedIcon}</div>
+              <div class="drug-effect-text" style="color: ${speedColor};">${speedText}</div>
+              <div class="drug-effect-duration">${drug.duration}h</div>
+            `;
+            list.appendChild(speedDiv);
+          }
+          
+          // Add hallucination effect if active
+          if (drug.hallucinating) {
+            const hallDiv = document.createElement('div');
+            hallDiv.className = 'drug-effect-item';
+            
+            // Show the actual drug type (revealed when consumed) or mystery name
+            const displayName = drug.name.includes('Mystery') ? 
+              (drug.mysteryType || drug.name) : drug.name;
+            hallDiv.innerHTML = `
+              <div class="drug-effect-icon">🌈</div>
+              <div class="drug-effect-text" style="color: #ff6b9d;">${displayName} Hallucinations</div>
+              <div class="drug-effect-duration">${drug.duration}h</div>
+            `;
+            list.appendChild(hallDiv);
+          }
+          
+          // Add time effect if active
+          if (drug.timeMultiplier !== undefined && drug.timeMultiplier !== 1) {
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'drug-effect-item';
+            
+            const timeIcon = drug.timeMultiplier > 1 ? '⏰' : '🐌';
+            const displayName = drug.name.includes('Mystery') ? 
+              (drug.mysteryType || drug.name) : drug.name;
+            const timeText = drug.timeMultiplier > 1 ? 
+              `${displayName} Time Speed (${drug.timeMultiplier}x)` : 
+              `${displayName} Time Slow (${drug.timeMultiplier}x)`;
+            const timeColor = drug.timeMultiplier > 1 ? '#00ff88' : '#ff6b35';
+            
+            timeDiv.innerHTML = `
+              <div class="drug-effect-icon">${timeIcon}</div>
+              <div class="drug-effect-text" style="color: ${timeColor};">${timeText}</div>
+              <div class="drug-effect-duration">${drug.duration}h</div>
+            `;
+            list.appendChild(timeDiv);
+          }
+        });
+        
+        // Show time stop effect if active
+        if (player.drugEffects.timeStopDuration > 0) {
+          const timeStopDiv = document.createElement('div');
+          timeStopDiv.className = 'drug-effect-item';
+          timeStopDiv.innerHTML = `
+            <div class="drug-effect-icon">⏸️</div>
+            <div class="drug-effect-text" style="color: #ff6b35; font-weight: bold;">Time Stopped</div>
+            <div class="drug-effect-duration">${player.drugEffects.timeStopDuration}s</div>
+          `;
+          list.appendChild(timeStopDiv);
+        }
+      } else {
+        panel.style.display = 'none';
+        countdownOverlay.style.display = 'none';
+      }
+    }
+    
+    // Queue for collection feedback to prevent overlap
+    let feedbackQueue = [];
+    let feedbackContainer = null;
+    
+    // Track recent pickups to combine notifications
+    let recentPickups = {};
+    const PICKUP_COMBINE_TIME = 1000; // Combine pickups within 1 second
+    
+    function updateLiveActivities() {
+      const activitiesContent = document.getElementById('activities-display');
+      if (!activitiesContent) return;
+      
+      const currentDay = player.time.day;
+      let announcement = '';
+      
+      if (currentDay === 1) {
+        announcement = 'Welcome to Burning Man! The playa is starting to fill up...';
+      } else if (currentDay === 2) {
+        announcement = 'More people are arriving! The energy is building...';
+      } else if (currentDay === 3) {
+        announcement = 'The playa is getting busier! Art cars and bikes everywhere...';
+      } else if (currentDay === 4) {
+        announcement = 'Midweek vibes! The community is growing stronger...';
+      } else if (currentDay === 5) {
+        announcement = 'The playa is alive! More art, more music, more magic...';
+      } else if (currentDay === 6) {
+        announcement = 'The energy is electric! Tomorrow the Man burns!';
+      } else if (currentDay === 7) {
+        announcement = '🔥 TODAY THE MAN BURNS! 🔥 The playa is at its peak!';
+      } else if (currentDay === 8) {
+        announcement = '🔥 TODAY THE TEMPLE BURNS! 🔥 The final ceremony... People are leaving...';
+      } else if (currentDay === 9) {
+        announcement = 'Post-Burning Man... The exodus begins...';
+      } else if (currentDay === 10) {
+        announcement = 'The playa is emptying fast... Most camps are gone...';
+      } else if (currentDay === 11) {
+        announcement = 'The playa is empty... Everything has been packed away...';
+      } else if (currentDay > 11) {
+        announcement = 'Post-Burning Man - The playa returns to dust... Nothing left but memories...';
+      }
+      
+      activitiesContent.innerHTML = `<p>${announcement}</p>`;
+    }
+    
+    function showDayAnnouncement(day) {
+      let announcement = '';
+      
+      if (day === 1) {
+        announcement = '🌅 Day 1 - Welcome to Burning Man! The playa is starting to fill up...';
+      } else if (day === 2) {
+        announcement = '🌅 Day 2 - More people are arriving! The energy is building...';
+      } else if (day === 3) {
+        announcement = '🌅 Day 3 - The playa is getting busier! Art cars and bikes everywhere...';
+      } else if (day === 4) {
+        announcement = '🌅 Day 4 - Midweek vibes! The community is growing stronger...';
+      } else if (day === 5) {
+        announcement = '🌅 Day 5 - The playa is alive! More art, more music, more magic...';
+      } else if (day === 6) {
+        announcement = '🌅 Day 6 - The energy is electric! Tomorrow the Man burns!';
+      } else if (day === 7) {
+        announcement = '🔥 Day 7 - TODAY THE MAN BURNS! 🔥 The playa is at its peak!';
+      } else if (day === 8) {
+        announcement = '🔥 Day 8 - TODAY THE TEMPLE BURNS! 🔥 The final ceremony... People are leaving...';
+      } else if (day === 9) {
+        announcement = '🌅 Day 9 - Post-Burning Man... The playa is emptying out...';
+      } else if (day === 10) {
+        announcement = '🌅 Day 10 - Almost everyone is gone... The playa returns to dust...';
+      } else if (day === 11) {
+        announcement = '🌅 Day 11 - The playa is empty... Everything has been packed away...';
+      } else if (day > 11) {
+        announcement = '🌅 Post-Burning Man - The playa returns to dust... Nothing left but memories...';
+      }
+      
+      if (announcement) {
+        // Update the activities display with the announcement
+        updateLiveActivities();
+      }
+    }
+    
+    function showCollectionFeedback(text, type, value) {
+      // Create container if it doesn't exist
+      if (!feedbackContainer) {
+        feedbackContainer = document.createElement('div');
+        feedbackContainer.id = 'feedback-container';
+        feedbackContainer.style.cssText = `
+          position: fixed;
+          top: 30%;
+          left: 50%;
+          transform: translate(-50%, 0);
+          z-index: 1000;
+          pointer-events: none;
+        `;
+        document.body.appendChild(feedbackContainer);
+      }
+      
+      const feedback = document.createElement('div');
+      feedback.className = `collection-feedback ${type}`;
+      
+      if (type === 'karma') {
+        feedback.textContent = `${text} (+${value} Karma)`;
+      } else if (type === 'coin') {
+        feedback.textContent = text;
+      } else if (type === 'water') {
+        feedback.textContent = `${text} (+Thirst)`;
+      } else if (type === 'food') {
+        feedback.textContent = `${text} (+${value} Hunger)`;
+      } else if (type === 'drug') {
+        feedback.textContent = `${text} (${value > 1 ? '+' : ''}${value}x Speed)`;
+      } else if (type === 'inventory') {
+        feedback.textContent = text; // Just show the item name, no additional info
+      }
+      
+      // Add to queue and position
+      feedbackQueue.push(feedback);
+      updateFeedbackPositions();
+      
+      feedbackContainer.appendChild(feedback);
+      
+      // Remove after animation
+      setTimeout(() => {
+        if (feedback.parentNode) {
+          feedback.parentNode.removeChild(feedback);
+          const index = feedbackQueue.indexOf(feedback);
+          if (index > -1) {
+            feedbackQueue.splice(index, 1);
+          }
+          updateFeedbackPositions();
+        }
+      }, 3000);
+    }
+    
+    function showDetailedEffects(text, effects, actionType) {
+      const modal = document.createElement('div');
+      modal.className = 'encounter-modal';
+      modal.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        border: 2px solid #ffd23f;
+        border-radius: 10px;
+        padding: 20px;
+        color: white;
+        font-family: 'Courier New', monospace;
+        z-index: 2000;
+        max-width: 400px;
+        text-align: center;
+      `;
+      
+      let effectsText = '';
+      if (effects.energy !== 0) {
+        effectsText += `Energy: ${effects.energy > 0 ? '+' : ''}${effects.energy}<br>`;
+      }
+      if (effects.mood !== 0) {
+        effectsText += `Mood: ${effects.mood > 0 ? '+' : ''}${effects.mood}<br>`;
+      }
+      if (effects.karma !== 0) {
+        effectsText += `Karma: ${effects.karma > 0 ? '+' : ''}${effects.karma}<br>`;
+      }
+      if (effects.thirst !== 0) {
+        effectsText += `Thirst: ${effects.thirst > 0 ? '+' : ''}${effects.thirst}<br>`;
+      }
+      if (effects.hunger !== 0) {
+        effectsText += `Hunger: ${effects.hunger > 0 ? '+' : ''}${effects.hunger}<br>`;
+      }
+      
+      modal.innerHTML = `
+        <div style="font-size: 1.2em; margin-bottom: 15px; color: #ffd23f;">${text}</div>
+        <div style="margin-bottom: 15px;">${effectsText}</div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Auto-close after 3 seconds
+      setTimeout(() => {
+        if (modal.parentNode) {
+          document.body.removeChild(modal);
+        }
+      }, 3000);
+    }
+    
+    // New function to handle combined pickup notifications
+    function showCombinedPickup(itemType, quantity = 1) {
+      const now = Date.now();
+      const key = `${itemType}`;
+      
+      // Check if we have a recent pickup of the same type
+      if (recentPickups[key] && (now - recentPickups[key].time) < PICKUP_COMBINE_TIME) {
+        // Combine with existing pickup
+        recentPickups[key].quantity += quantity;
+        recentPickups[key].time = now;
+        
+        // Update the existing feedback element
+        const existingFeedback = recentPickups[key].element;
+        if (existingFeedback && existingFeedback.parentNode) {
+          let displayText = '';
+          if (itemType === 'coin') {
+            displayText = `+${recentPickups[key].quantity} Coins`;
+          } else if (itemType === 'water') {
+            displayText = `+${recentPickups[key].quantity} Water`;
+          } else if (itemType === 'moop') {
+            displayText = `+${recentPickups[key].quantity} MOOP`;
+          } else {
+            displayText = `+${recentPickups[key].quantity} ${itemType}`;
+          }
+          existingFeedback.textContent = displayText;
+        }
+      } else {
+        // Create new pickup notification
+        let displayText = '';
+        if (itemType === 'coin') {
+          displayText = `+${quantity} Coin${quantity > 1 ? 's' : ''}`;
+        } else if (itemType === 'water') {
+          displayText = `+${quantity} Water`;
+        } else if (itemType === 'moop') {
+          displayText = `+${quantity} MOOP`;
+        } else {
+          displayText = `+${quantity} ${itemType}`;
+        }
+        
+        const feedback = document.createElement('div');
+        feedback.className = `collection-feedback ${itemType}`;
+        feedback.textContent = displayText;
+        
+        // Store in recent pickups
+        recentPickups[key] = {
+          element: feedback,
+          quantity: quantity,
+          time: now
+        };
+        
+        // Create container if it doesn't exist
+        if (!feedbackContainer) {
+          feedbackContainer = document.createElement('div');
+          feedbackContainer.id = 'feedback-container';
+          feedbackContainer.style.cssText = `
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, 0);
+            z-index: 1000;
+            pointer-events: none;
+          `;
+          document.body.appendChild(feedbackContainer);
+        }
+        
+        // Add to queue and position
+        feedbackQueue.push(feedback);
+        updateFeedbackPositions();
+        feedbackContainer.appendChild(feedback);
+        
+        // Remove after animation
+        setTimeout(() => {
+          if (feedback.parentNode) {
+            feedback.parentNode.removeChild(feedback);
+            const index = feedbackQueue.indexOf(feedback);
+            if (index > -1) {
+              feedbackQueue.splice(index, 1);
+            }
+            updateFeedbackPositions();
+          }
+          // Clean up recent pickups
+          delete recentPickups[key];
+        }, 3000);
+      }
+    }
+    
+    function updateFeedbackPositions() {
+      feedbackQueue.forEach((feedback, index) => {
+        const offset = index * 35; // 35px spacing between items
+        feedback.style.transform = `translate(-50%, ${offset}px)`;
+      });
+    }
+    
+    
+    // Encounter system
+    function showEncounter(encounter) {
+      const modal = document.createElement('div');
+      modal.className = 'encounter-modal';
+      modal.innerHTML = `
+        <div class="encounter-text">${encounter.text}</div>
+        <div class="encounter-choices" id="encounter-choices"></div>
+      `;
+      document.body.appendChild(modal);
+      
+      const choicesDiv = document.getElementById('encounter-choices');
+      encounter.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice.label;
+        btn.onclick = () => {
+          applyEff(choice.eff);
+          if (encounter.onExit) encounter.onExit();
+          advance(30);
+          document.body.removeChild(modal);
+          updateStatsDisplay();
+        };
+        choicesDiv.appendChild(btn);
+      });
+      
+      if (encounter.onEnter) encounter.onEnter();
+    }
+    
+    function doEncounter() {
+      const pool = Math.random() < 0.25 ? [encounters[3]] : [encounters[0], encounters[1], encounters[2], encounters[4]];
+      const encounter = pick(pool);
+      showEncounter(encounter);
+    }
+    
+    // Action functions
+    const actions = {
+      explore: () => doEncounter(),
+      
+      chore: () => {
+        const chores = [
+          { name: 'Ice Run', diff: 0.3, reward: function(s) { s.coin += 3; s.karma += 2; s.energy -= 8; s.thirst += 5; } },
+          { name: 'Grease Trap', diff: 0.6, reward: function(s) { s.coin += 6; s.karma += 4; s.energy -= 12; s.mood -= 2; } },
+          { name: 'MOOP Sweep', diff: 0.2, reward: function(s) { s.coin += 2; s.karma += 5; s.energy -= 5; } }
+        ];
+        const job = pick(chores);
+        const chance = Math.max(0.1, 0.8 - job.diff + (player.stats.energy - 50) / 200);
+        const ok = rnd(chance);
+        
+        const modal = document.createElement('div');
+        modal.className = 'encounter-modal';
+        modal.innerHTML = `
+          <div class="encounter-text">${job.name}: ${ok ? 'Success!' : 'Tough break...'}</div>
+          <button class="choice-btn" onclick="document.body.removeChild(this.parentElement); applyEff(${job.reward.toString()}); advance(30); updateStatsDisplay();">Continue</button>
+        `;
+        document.body.appendChild(modal);
+      },
+      
+      rest: () => {
+        // Start napping
+        player.sleeping = true;
+        player.sleepStartTime = Date.now();
+        showCollectionFeedback('Taking a nap... Press any key to wake up early!', 'energy', 0);
+        advance(5); // Small time advance for starting the nap
+      },
+      
+      shop: () => {
+        const modal = document.createElement('div');
+        modal.className = 'encounter-modal';
+        modal.innerHTML = `
+          <div class="encounter-text">Welcome to Center Camp! What would you like to buy?</div>
+          <div class="encounter-choices" id="shop-choices"></div>
+        `;
+        document.body.appendChild(modal);
+        
+        const choicesDiv = document.getElementById('shop-choices');
+        
+        // Ice option
+        const iceBtn = document.createElement('button');
+        iceBtn.className = 'choice-btn';
+        iceBtn.textContent = `🧊 Ice (15 coins) - Increases karma`;
+        iceBtn.onclick = () => {
+          if (player.stats.coin >= 15) {
+            document.body.removeChild(modal);
+            applyEff(function(s) { 
+              s.coin -= 15; 
+              s.karma += 25; 
+            });
+            advance(10);
+            updateStatsDisplay();
+            showCollectionFeedback('Bought ice! +25 Karma', 'karma', 25);
+          } else {
+            alert('Not enough coins! You need 15 coins for ice.');
+          }
+        };
+        choicesDiv.appendChild(iceBtn);
+        
+        // Tea option
+        const teaBtn = document.createElement('button');
+        teaBtn.className = 'choice-btn';
+        teaBtn.textContent = `🍵 Tea (5 coins) - Increases energy and mood`;
+        teaBtn.onclick = () => {
+          if (player.stats.coin >= 5) {
+            document.body.removeChild(modal);
+            applyEff(function(s) { 
+              s.coin -= 5; 
+              s.energy += 15; 
+              s.mood += 10; 
+            });
+            advance(10);
+            updateStatsDisplay();
+            showCollectionFeedback('Bought tea! +15 Energy, +10 Mood', 'mood', 10);
+          } else {
+            alert('Not enough coins! You need 5 coins for tea.');
+          }
+        };
+        choicesDiv.appendChild(teaBtn);
+        
+        // Cancel option
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'choice-btn';
+        cancelBtn.textContent = 'Never mind';
+        cancelBtn.onclick = () => {
+          document.body.removeChild(modal);
+        };
+        choicesDiv.appendChild(cancelBtn);
+      },
+      
+      help: () => {
+        const helpOptions = [
+          { name: 'Help with Setup', karma: 8, mood: 10, energy: -8, text: 'You help a fellow burner set up their camp.' },
+          { name: 'Give Directions', karma: 4, mood: 6, energy: -2, text: 'You help someone find their way around the playa.' },
+          { name: 'Share Supplies', karma: 6, mood: 8, energy: -3, text: 'You share some of your supplies with someone in need.' },
+          { name: 'Teach Something', karma: 10, mood: 12, energy: -5, text: 'You teach someone a new skill or share knowledge.' },
+          { name: 'Listen & Support', karma: 5, mood: 15, energy: -4, text: 'You provide emotional support to someone going through a tough time.' }
+        ];
+        
+        const modal = document.createElement('div');
+        modal.className = 'encounter-modal';
+        modal.innerHTML = `
+          <div class="encounter-text">You encounter someone who needs help. What do you do?</div>
+          <div class="encounter-choices" id="help-choices"></div>
+        `;
+        document.body.appendChild(modal);
+        
+        const choicesDiv = document.getElementById('help-choices');
+        helpOptions.forEach(option => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          btn.textContent = `${option.name} (${option.karma} karma, ${option.mood} mood, ${option.energy} energy)`;
+          btn.onclick = () => {
+            document.body.removeChild(modal);
+            applyEff(function(s) { 
+              s.karma += option.karma; 
+              s.mood += option.mood; 
+              s.energy += option.energy; 
+            });
+            advance(20);
+            updateStatsDisplay();
+          };
+          choicesDiv.appendChild(btn);
+        });
+      },
+      
+      battle: () => {
+        const moves = ['Glitter Bomb', 'Bass Drop', 'Cuddle Beam'];
+        const beats = { 'Glitter Bomb': 'Cuddle Beam', 'Cuddle Beam': 'Bass Drop', 'Bass Drop': 'Glitter Bomb' };
+        const askFirst = rnd(0.7);
+        
+        const modal = document.createElement('div');
+        modal.className = 'encounter-modal';
+        modal.innerHTML = `
+          <div class="encounter-text">Silly duel! Pick a move (ask for consent first for +karma).</div>
+          <div class="encounter-choices" id="battle-choices"></div>
+        `;
+        document.body.appendChild(modal);
+        
+        const choicesDiv = document.getElementById('battle-choices');
+        moves.forEach(move => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          btn.textContent = move;
+          btn.onclick = () => {
+            const foe = pick(moves);
+            let text = `You chose ${move}. Foe chose ${foe}. `;
+            if (askFirst) { applyEff(function(s) { s.karma += 2; }); text += '(You asked first — nice!) '; }
+            if (beats[move] === foe) { player.stats.coin += 3; player.stats.mood += 3; text += 'You win! +3 coin.'; }
+            else if (beats[foe] === move) { player.stats.mood -= 2; text += 'You lose, but it was silly.'; }
+            else { text += 'A tie. Everyone sparkles.'; }
+            
+            modal.innerHTML = `
+              <div class="encounter-text">${text}</div>
+              <button class="choice-btn" onclick="document.body.removeChild(this.parentElement); advance(15); updateStatsDisplay();">Continue</button>
+            `;
+            updateStatsDisplay();
+          };
+          choicesDiv.appendChild(btn);
+        });
+      },
+      
+      board: () => {
+        console.log('Board button clicked!');
+        console.log('nearbyArtCar:', nearbyArtCar);
+        console.log('nearbyBike:', nearbyBike);
+        console.log('ridingArtCar:', ridingArtCar);
+        console.log('ridingBike:', ridingBike);
+        
+        if (nearbyArtCar && ridingArtCar === null && ridingBike === null) {
+          console.log(`Boarded ${nearbyArtCar.name}!`);
+          ridingArtCar = nearbyArtCar;
+          nearbyArtCar.hasPassenger = true;
+          // Position player in center of car platform
+          player.worldX = nearbyArtCar.x + nearbyArtCar.w / 2 - player.w / 2;
+          player.worldY = nearbyArtCar.y + nearbyArtCar.h / 2 - player.h / 2;
+          updateTransportButtons();
+        } else if (nearbyBike && ridingBike === null && ridingArtCar === null) {
+          console.log('Mounted bike!');
+          ridingBike = nearbyBike;
+          updateTransportButtons();
+        } else {
+          console.log('Board conditions not met');
+        }
+      },
+      
+      dismount: () => {
+        console.log('Dismount button clicked!');
+        console.log('ridingArtCar:', ridingArtCar);
+        console.log('ridingBike:', ridingBike);
+        
+        // Force dismount regardless of button state
+        if (ridingArtCar || ridingBike) {
+          if (ridingArtCar) {
+            console.log(`Got off ${ridingArtCar.name}!`);
+            ridingArtCar.hasPassenger = false;
+            lastExitTime = Date.now();
+            
+            // Position player well outside the art car to avoid collision bugs
+            const carCenterX = ridingArtCar.x + ridingArtCar.w / 2;
+            const carCenterY = ridingArtCar.y + ridingArtCar.h / 2;
+            const playerCenterX = player.worldX + player.w / 2;
+            const playerCenterY = player.worldY + player.h / 2;
+            
+            // Calculate direction away from car center
+            const dx = playerCenterX - carCenterX;
+            const dy = playerCenterY - carCenterY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // Much larger push distance to avoid collision issues
+            const pushDistance = Math.max(ridingArtCar.w, ridingArtCar.h) / 2 + 80;
+            
+            if (distance > 0) {
+              // Normalize and push player much further away
+              const normalizedX = dx / distance;
+              const normalizedY = dy / distance;
+              
+              player.worldX = carCenterX + normalizedX * pushDistance - player.w / 2;
+              player.worldY = carCenterY + normalizedY * pushDistance - player.h / 2;
+            } else {
+              // If player is exactly at center, push them to the right
+              player.worldX = carCenterX + pushDistance - player.w / 2;
+              player.worldY = carCenterY - player.h / 2;
+            }
+            
+            // Check if player is colliding with any other art car and adjust position if needed
+            let colliding = false;
+            do {
+              colliding = false;
+              for (let otherCar of artCars) {
+                if (otherCar !== ridingArtCar) {
+                  if (player.worldX < otherCar.x + otherCar.w && 
+                      player.worldX + player.w > otherCar.x &&
+                      player.worldY < otherCar.y + otherCar.h && 
+                      player.worldY + player.h > otherCar.y) {
+                    colliding = true;
+                    // Push player further away from this collision
+                    const otherCenterX = otherCar.x + otherCar.w / 2;
+                    const otherCenterY = otherCar.y + otherCar.h / 2;
+                    const dx2 = player.worldX + player.w/2 - otherCenterX;
+                    const dy2 = player.worldY + player.h/2 - otherCenterY;
+                    const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+                    
+                    if (dist2 > 0) {
+                      const normX = dx2 / dist2;
+                      const normY = dy2 / dist2;
+                      const escapeDistance = Math.max(otherCar.w, otherCar.h) / 2 + 60;
+                      
+                      player.worldX = otherCenterX + normX * escapeDistance - player.w / 2;
+                      player.worldY = otherCenterY + normY * escapeDistance - player.h / 2;
+                    }
+                    break;
+                  }
+                }
+              }
+            } while (colliding);
+            
+            console.log(`Final player position: (${player.worldX}, ${player.worldY})`);
+            
+            // Reset player offset when dismounting
+            if (ridingArtCar.playerOffset) {
+              ridingArtCar.playerOffset = null;
+            }
+            
+            // Clear the reference immediately
+            ridingArtCar = null;
+          }
+          if (ridingBike) {
+            console.log('Dismounted bike!');
+            ridingBike = null;
+          }
+          
+          // Force button update and ensure movement works
+          setTimeout(() => {
+            updateTransportButtons();
+            console.log('Post-dismount state - ridingArtCar:', ridingArtCar, 'ridingBike:', ridingBike);
+            console.log('Player position after dismount:', player.worldX, player.worldY);
+          }, 100);
+        } else {
+          console.log('Nothing to dismount from - but forcing anyway');
+          // Emergency dismount - clear everything
+          ridingArtCar = null;
+          ridingBike = null;
+          updateTransportButtons();
+        }
+      },
+      
+      gift: () => {
+        // Check what items are available in inventory
+        const availableGifts = [];
+        
+        // Add inventory items
+        Object.keys(player.inventory).forEach(itemName => {
+          const quantity = player.inventory[itemName];
+          if (quantity > 0) {
+            if (itemName === 'Water') {
+              availableGifts.push({ 
+                name: 'Water Bottle', 
+                itemName: 'Water', 
+                cost: 0, 
+                karma: 5, 
+                mood: 4, 
+                text: 'You share your water with someone in need.',
+                type: 'inventory'
+              });
+            } else if (itemName === 'Clothing') {
+              availableGifts.push({ 
+                name: 'Clothing', 
+                itemName: 'Clothing', 
+                cost: 0, 
+                karma: 6, 
+                mood: 7, 
+                text: 'You gift some clothing to someone who needs it.',
+                type: 'inventory'
+              });
+            } else if (itemName === 'Trinket') {
+              availableGifts.push({ 
+                name: 'Trinket', 
+                itemName: 'Trinket', 
+                cost: 0, 
+                karma: 4, 
+                mood: 6, 
+                text: 'You gift a small trinket to a fellow burner.',
+                type: 'inventory'
+              });
+            } else if (itemName === 'Grilled Cheese' || itemName === 'Veggie Burger' || itemName === 'Fruit Salad' || itemName === 'Energy Bar' || itemName === 'Pizza Slice' || itemName === 'Smoothie') {
+              availableGifts.push({ 
+                name: itemName, 
+                itemName: itemName, 
+                cost: 0, 
+                karma: 4, 
+                mood: 5, 
+                text: `You offer ${itemName.toLowerCase()} to a hungry stranger.`,
+                type: 'inventory'
+              });
+            }
+          }
+        });
+        
+        // Add free gifts (hugs, etc.)
+        availableGifts.push({ 
+          name: 'Hug', 
+          itemName: null, 
+          cost: 0, 
+          karma: 2, 
+          mood: 8, 
+          text: 'You give someone a warm playa hug.',
+          type: 'free'
+        });
+        
+        if (availableGifts.length === 0) {
+          alert('You have nothing to give! Try collecting some items first.');
+          return;
+        }
+        
+        const modal = document.createElement('div');
+        modal.className = 'encounter-modal';
+        modal.innerHTML = `
+          <div class="encounter-text">You want to give a gift to someone. What do you offer?</div>
+          <div class="encounter-choices" id="gift-choices"></div>
+        `;
+        document.body.appendChild(modal);
+        
+        const choicesDiv = document.getElementById('gift-choices');
+        availableGifts.forEach(gift => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          
+          // Show quantity for inventory items
+          let buttonText = `${gift.name}`;
+          if (gift.type === 'inventory' && gift.itemName) {
+            const quantity = player.inventory[gift.itemName] || 0;
+            buttonText += ` (${quantity} available)`;
+          }
+          buttonText += ` (+${gift.karma} karma, +${gift.mood} mood)`;
+          
+          btn.textContent = buttonText;
+          btn.onclick = () => {
+            if (gift.type === 'inventory' && gift.itemName === 'Trinket') {
+              // Special handling for trinkets - show quantity selection
+              const quantity = player.inventory[gift.itemName] || 0;
+              if (quantity > 1) {
+                // Show quantity selection modal
+                const quantityModal = document.createElement('div');
+                quantityModal.className = 'encounter-modal';
+                quantityModal.innerHTML = `
+                  <div class="encounter-text">How many trinkets do you want to give? (You have ${quantity})</div>
+                  <div class="encounter-choices" id="quantity-choices"></div>
+                `;
+                document.body.appendChild(quantityModal);
+                
+                const choicesDiv = document.getElementById('quantity-choices');
+                for (let i = 1; i <= Math.min(quantity, 5); i++) {
+                  const qtyBtn = document.createElement('button');
+                  qtyBtn.className = 'choice-btn';
+                  qtyBtn.textContent = `Give ${i} trinket${i > 1 ? 's' : ''} (+${gift.karma * i} karma, +${gift.mood * i} mood)`;
+                  qtyBtn.onclick = () => {
+                    document.body.removeChild(quantityModal);
+                    document.body.removeChild(modal);
+                    
+                    // Remove items from inventory
+                    for (let j = 0; j < i; j++) {
+                      useItem(gift.itemName, () => {});
+                    }
+                    
+                    applyEff(function(s) { 
+                      s.karma += gift.karma * i; 
+                      s.mood += gift.mood * i; 
+                    });
+                    advance(15);
+                    updateStatsDisplay();
+                    updateInventoryDisplay();
+                  };
+                  choicesDiv.appendChild(qtyBtn);
+                }
+                
+                // Cancel button
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'choice-btn';
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.onclick = () => {
+                  document.body.removeChild(quantityModal);
+                };
+                choicesDiv.appendChild(cancelBtn);
+                
+                return; // Don't proceed with normal gift logic
+              }
+            }
+            
+            // Normal gift logic for non-trinket items or single trinket
+            document.body.removeChild(modal);
+            
+            if (gift.type === 'inventory') {
+              // Remove item from inventory
+              useItem(gift.itemName, () => {});
+            }
+            
+            applyEff(function(s) { 
+              s.karma += gift.karma; 
+              s.mood += gift.mood; 
+            });
+            advance(15);
+            updateStatsDisplay();
+            updateInventoryDisplay();
+          };
+          choicesDiv.appendChild(btn);
+        });
+        
+        // Add cancel button
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'choice-btn';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.onclick = () => {
+          document.body.removeChild(modal);
+          advance(5);
+        };
+        choicesDiv.appendChild(cancelBtn);
+      },
+      
+      dance: () => {
+        // Check cooldown
+        if (player.cooldowns.dance > 0) {
+          showCollectionFeedback(`Dancing on cooldown for ${player.cooldowns.dance} more days`, 'mood', 0);
+          return;
+        }
+        
+        const danceStyles = [
+          { name: 'Freeform', energy: -8, mood: 12, karma: 1, text: 'You dance freely to the music.' },
+          { name: 'Partner Dance', energy: -6, mood: 15, karma: 3, text: 'You dance with a fellow burner.' },
+          { name: 'Fire Dance', energy: -12, mood: 20, karma: 5, text: 'You dance near the fire performers.' },
+          { name: 'Silent Disco', energy: -4, mood: 8, karma: 2, text: 'You dance at a silent disco.' }
+        ];
+        
+        const dance = pick(danceStyles);
+        
+        // Apply effects immediately
+        applyEff(function(s) { 
+          s.energy += dance.energy; 
+          s.mood += dance.mood; 
+          s.karma += dance.karma; 
+        });
+        
+        // Set cooldown (1 day)
+        player.cooldowns.dance = 1;
+        
+        // Show detailed effects
+        showDetailedEffects(dance.text, {
+          energy: dance.energy,
+          mood: dance.mood,
+          karma: dance.karma,
+          thirst: 0,
+          hunger: 0
+        }, 'dance');
+        
+        advance(20);
+        updateStatsDisplay();
+      },
+      
+      climb: () => {
+        // Check cooldown
+        if (player.cooldowns.climb > 0) {
+          showCollectionFeedback(`Climbing on cooldown for ${player.cooldowns.climb} more days`, 'mood', 0);
+          return;
+        }
+        
+        const climbOptions = [
+          { name: 'Small Art', energy: -5, mood: 8, karma: 2, text: 'You climb on a small art installation.' },
+          { name: 'Temple', energy: -8, mood: 15, karma: 5, text: 'You carefully climb the temple for a better view.' },
+          { name: 'Art Car', energy: -3, mood: 10, karma: 3, text: 'You climb on a parked art car.' },
+          { name: 'Dangerous Climb', energy: -15, mood: 25, karma: 8, text: 'You attempt a risky climb on large art.' }
+        ];
+        
+        const climb = pick(climbOptions);
+        
+        // Apply effects immediately
+        applyEff(function(s) { 
+          s.energy += climb.energy; 
+          s.mood += climb.mood; 
+          s.karma += climb.karma; 
+        });
+        
+        // Set cooldown (1 day)
+        player.cooldowns.climb = 1;
+        
+        // Show detailed effects
+        showDetailedEffects(climb.text, {
+          energy: climb.energy,
+          mood: climb.mood,
+          karma: climb.karma,
+          thirst: 0,
+          hunger: 0
+        }, 'climb');
+        
+        advance(25);
+        updateStatsDisplay();
+      },
+      
+      orgy: () => {
+        const orgyOptions = [
+          { name: 'Cuddle Puddle', mood: 15, karma: 8, energy: -5, text: 'You join a consenting cuddle puddle.' },
+          { name: 'Kink Party', mood: 20, karma: 5, energy: -8, text: 'You participate in a kink-themed gathering.' },
+          { name: 'Sacred Sexuality', mood: 25, karma: 12, energy: -10, text: 'You join a sacred sexuality workshop.' },
+          { name: 'Polyamory Circle', mood: 18, karma: 10, energy: -6, text: 'You participate in a polyamory discussion circle.' }
+        ];
+        
+        const orgy = pick(orgyOptions);
+        
+        const modal = document.createElement('div');
+        modal.className = 'encounter-modal';
+        modal.innerHTML = `
+          <div class="encounter-text">${orgy.text}</div>
+          <button class="choice-btn" onclick="document.body.removeChild(this.parentElement); applyEff(function(s) { s.mood += ${orgy.mood}; s.karma += ${orgy.karma}; s.energy += ${orgy.energy}; }); advance(45); updateStatsDisplay();">Continue</button>
+        `;
+        document.body.appendChild(modal);
+      },
+      
+      meditate: () => {
+        const meditationTypes = [
+          { name: 'Sunrise Meditation', mood: 15, karma: 5, energy: 5, text: 'You meditate during the beautiful sunrise.' },
+          { name: 'Temple Meditation', mood: 20, karma: 8, energy: 8, text: 'You find peace in the temple.' },
+          { name: 'Sound Meditation', mood: 12, karma: 3, energy: 3, text: 'You meditate to ambient playa sounds.' },
+          { name: 'Group Meditation', mood: 18, karma: 6, energy: 6, text: 'You join a group meditation session.' }
+        ];
+        
+        const meditation = pick(meditationTypes);
+        
+        const modal = document.createElement('div');
+        modal.className = 'encounter-modal';
+        modal.innerHTML = `
+          <div class="encounter-text">${meditation.text}</div>
+          <button class="choice-btn" onclick="document.body.removeChild(this.parentElement); applyEff(function(s) { s.mood += ${meditation.mood}; s.karma += ${meditation.karma}; s.energy += ${meditation.energy}; }); advance(30); updateStatsDisplay();">Continue</button>
+        `;
+        document.body.appendChild(modal);
+      }
+    };
+
+    function getDayNightBackgroundColor() {
+      const hour = player.time.hour;
+      
+      // Base color (daytime)
+      const baseColor = "#D2B48C"; // Medium tan
+      
+      // Calculate brightness factor (0 = darkest night, 1 = brightest day)
+      let brightness = 1;
+      
+      if (hour >= 18 || hour < 6) { // 6 PM - 6 AM (night)
+        if (hour >= 18 && hour < 20) { // 6 PM - 8 PM (sunset)
+          brightness = 1 - ((hour - 18) / 2) * 0.6; // Fade to 40% brightness
+        } else if (hour >= 20 && hour < 24) { // 8 PM - 12 AM (darker)
+          brightness = 0.4 - ((hour - 20) / 4) * 0.25; // Fade to 15% brightness
+        } else if (hour >= 0 && hour < 4) { // 12 AM - 4 AM (darkest)
+          brightness = 0.15; // Very dark
+        } else if (hour >= 4 && hour < 6) { // 4 AM - 6 AM (dawn)
+          brightness = 0.15 + ((hour - 4) / 2) * 0.85; // Fade back to full brightness
+        }
+      } else { // 6 AM - 6 PM (day)
+        brightness = 1; // Full brightness
+      }
+      
+      // Convert hex to RGB, apply brightness, convert back to hex
+      const hex = baseColor.replace('#', '');
+      const r = Math.floor(parseInt(hex.substr(0, 2), 16) * brightness);
+      const g = Math.floor(parseInt(hex.substr(2, 2), 16) * brightness);
+      const b = Math.floor(parseInt(hex.substr(4, 2), 16) * brightness);
+      
+      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+
+    // Draw the Man structure with growing limbs - more like actual Burning Man
+    function drawMan() {
+      const screenX = manStructure.x - camera.x;
+      const screenY = manStructure.y - camera.y;
+      
+      // Only draw if on screen
+      if (screenX > -manStructure.w && screenX < canvas.width && 
+          screenY > -manStructure.h && screenY < canvas.height) {
+        
+        // Only draw the Man if it hasn't burned yet
+        if (!manStructure.burned) {
+          // Draw the distinctive Burning Man silhouette
+          ctx.fillStyle = '#654321'; // Darker wood color
+          
+          // Main body (torso) - wider at bottom, narrower at shoulders
+          const bodyWidth = 25 + (manStructure.limbs * 2); // Gets wider as it's built
+          const bodyHeight = 80 + (manStructure.limbs * 5); // Gets taller as it's built
+          
+          // Draw main body as a trapezoid
+          ctx.beginPath();
+          ctx.moveTo(screenX + manStructure.w/2 - bodyWidth/2, screenY + bodyHeight);
+          ctx.lineTo(screenX + manStructure.w/2 - bodyWidth/3, screenY + 20);
+          ctx.lineTo(screenX + manStructure.w/2 + bodyWidth/3, screenY + 20);
+          ctx.lineTo(screenX + manStructure.w/2 + bodyWidth/2, screenY + bodyHeight);
+          ctx.closePath();
+          ctx.fill();
+          
+          // Draw outstretched arms (signature Burning Man pose)
+          if (manStructure.limbs >= 2) {
+            const armLength = 40 + (manStructure.limbs * 3);
+            const armY = screenY + 25;
+            
+            // Left arm (outstretched)
+            ctx.beginPath();
+            ctx.moveTo(screenX + manStructure.w/2 - bodyWidth/3, armY);
+            ctx.lineTo(screenX + manStructure.w/2 - bodyWidth/3 - armLength, armY - 10);
+            ctx.lineWidth = 8 + (manStructure.limbs * 2);
+            ctx.strokeStyle = '#654321';
+            ctx.stroke();
+            
+            // Right arm (outstretched)
+            ctx.beginPath();
+            ctx.moveTo(screenX + manStructure.w/2 + bodyWidth/3, armY);
+            ctx.lineTo(screenX + manStructure.w/2 + bodyWidth/3 + armLength, armY - 10);
+            ctx.stroke();
+          }
+          
+          // Draw legs
+          if (manStructure.limbs >= 4) {
+            const legWidth = 12;
+            const legHeight = 30 + (manStructure.limbs * 2);
+            const legY = screenY + bodyHeight;
+            
+            // Left leg
+            ctx.fillRect(screenX + manStructure.w/2 - bodyWidth/2 + 5, legY, legWidth, legHeight);
+            
+            // Right leg
+            ctx.fillRect(screenX + manStructure.w/2 + bodyWidth/2 - 5 - legWidth, legY, legWidth, legHeight);
+          }
+          
+          // Draw the iconic neon circle around the Man (when fully built)
+          if (manStructure.limbs >= 6) {
+            const circleRadius = 80 + (manStructure.limbs * 5);
+            ctx.strokeStyle = '#00FFFF'; // Bright cyan
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(screenX + manStructure.w/2, screenY + bodyHeight/2, circleRadius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Add some sparkle effects
+            ctx.fillStyle = '#FFFF00';
+            for (let i = 0; i < 8; i++) {
+              const angle = (i / 8) * Math.PI * 2;
+              const sparkleX = screenX + manStructure.w/2 + Math.cos(angle) * circleRadius;
+              const sparkleY = screenY + bodyHeight/2 + Math.sin(angle) * circleRadius;
+              ctx.fillRect(sparkleX - 1, sparkleY - 1, 2, 2);
+            }
+          }
+          
+          // Draw construction progress indicator (only if not burned)
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+          ctx.font = 'bold 12px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(`The Man: ${Math.round(manStructure.constructionProgress)}%`, 
+                      screenX + manStructure.w/2, screenY - 15);
+        }
+        
+        // If burned, show pile of ashes
+        if (manStructure.burned) {
+          // Draw pile of ashes where the Man used to be
+          const ashWidth = 60;
+          const ashHeight = 20;
+          const ashX = screenX + manStructure.w/2 - ashWidth/2;
+          const ashY = screenY + bodyHeight - ashHeight;
+          
+          // Main ash pile (dark gray)
+          ctx.fillStyle = '#2C2C2C';
+          ctx.beginPath();
+          ctx.ellipse(ashX + ashWidth/2, ashY + ashHeight/2, ashWidth/2, ashHeight/2, 0, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Add some lighter ash particles scattered around
+          ctx.fillStyle = '#4A4A4A';
+          for (let i = 0; i < 15; i++) {
+            const ashParticleX = ashX + (Math.random() - 0.5) * ashWidth * 1.5;
+            const ashParticleY = ashY + (Math.random() - 0.5) * ashHeight * 2;
+            const particleSize = Math.random() * 3 + 1;
+            ctx.fillRect(ashParticleX, ashParticleY, particleSize, particleSize);
+          }
+          
+          // Add some white ash embers
+          ctx.fillStyle = '#8B8B8B';
+          for (let i = 0; i < 8; i++) {
+            const emberX = ashX + (Math.random() - 0.5) * ashWidth;
+            const emberY = ashY + (Math.random() - 0.5) * ashHeight;
+            ctx.fillRect(emberX, emberY, 2, 2);
+          }
+          
+          // Text indicating the Man has burned
+          ctx.fillStyle = '#666666';
+          ctx.font = 'bold 14px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('🔥 THE MAN BURNED 🔥', screenX + manStructure.w/2, screenY - 15);
+        }
+      }
+    }
+    
+    // Draw the Temple structure with progressive construction
+    function drawTemple() {
+      const screenX = templeStructure.x - camera.x;
+      const screenY = templeStructure.y - camera.y;
+      
+      // Only draw if on screen
+      if (screenX > -templeStructure.w && screenX < canvas.width && 
+          screenY > -templeStructure.h && screenY < canvas.height) {
+        
+        // Draw temple based on construction progress
+        const constructionHeight = (templeStructure.constructionProgress / 100) * templeStructure.h;
+        
+        // Base structure (always visible)
+        ctx.fillStyle = '#D2691E'; // Chocolate color
+        ctx.fillRect(screenX, screenY + templeStructure.h - constructionHeight, 
+                    templeStructure.w, constructionHeight);
+        
+        // Draw roof when construction is advanced enough
+        if (templeStructure.constructionProgress > 30) {
+          ctx.fillStyle = '#B22222'; // Fire brick color
+          ctx.beginPath();
+          ctx.moveTo(screenX, screenY + templeStructure.h - constructionHeight);
+          ctx.lineTo(screenX + templeStructure.w/2, screenY + templeStructure.h - constructionHeight - 20);
+          ctx.lineTo(screenX + templeStructure.w, screenY + templeStructure.h - constructionHeight);
+          ctx.closePath();
+          ctx.fill();
+        }
+        
+        // Draw columns when construction is advanced enough
+        if (templeStructure.constructionProgress > 50) {
+          ctx.fillStyle = '#F5F5DC'; // Beige color
+          for (let i = 0; i < 4; i++) {
+            const columnX = screenX + 15 + (i * 20);
+            const columnHeight = Math.min(40, constructionHeight * 0.8);
+            ctx.fillRect(columnX, screenY + templeStructure.h - columnHeight, 8, columnHeight);
+          }
+        }
+        
+        // Draw construction progress indicator
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Temple: ${Math.round(templeStructure.constructionProgress)}%`, 
+                    screenX + templeStructure.w/2, screenY - 10);
+        
+        // If burned, show fire effect
+        if (templeStructure.burned) {
+          ctx.fillStyle = '#FF4500';
+          ctx.font = '16px Arial';
+          ctx.fillText('🔥 BURNED 🔥', screenX + templeStructure.w/2, screenY + templeStructure.h/2);
+        }
+      }
+    }
+
+    // Draw the circle around the Man
+    function drawManCircle() {
+      const circleCenterX = manStructure.x + manStructure.w/2 - camera.x;
+      const circleCenterY = manStructure.y + manStructure.h/2 - camera.y;
+      
+      // Only draw if on screen
+      if (circleCenterX > -MAN_CIRCLE_RADIUS && circleCenterX < canvas.width + MAN_CIRCLE_RADIUS &&
+          circleCenterY > -MAN_CIRCLE_RADIUS && circleCenterY < canvas.height + MAN_CIRCLE_RADIUS) {
+        
+        ctx.strokeStyle = '#FFFF00'; // Bright yellow
+        ctx.lineWidth = 3;
+        ctx.setLineDash([10, 5]); // Dashed line
+        ctx.beginPath();
+        ctx.arc(circleCenterX, circleCenterY, MAN_CIRCLE_RADIUS, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset line dash
+        
+        // Add some markers around the circle (like real Burning Man)
+        ctx.fillStyle = '#FFFF00';
+        for (let i = 0; i < 12; i++) {
+          const angle = (i / 12) * Math.PI * 2;
+          const markerX = circleCenterX + Math.cos(angle) * MAN_CIRCLE_RADIUS;
+          const markerY = circleCenterY + Math.sin(angle) * MAN_CIRCLE_RADIUS;
+          ctx.fillRect(markerX - 2, markerY - 2, 4, 4);
+        }
+      }
+    }
+
+    // Draw the trash fence around the playa
+    function drawTrashFence() {
+      const playaCenterX = 0 - camera.x;
+      const playaCenterY = 0 - camera.y;
+      
+      // Only draw if on screen
+      if (playaCenterX > -PLAYA_RADIUS && playaCenterX < canvas.width + PLAYA_RADIUS &&
+          playaCenterY > -PLAYA_RADIUS && playaCenterY < canvas.height + PLAYA_RADIUS) {
+        
+        // Draw the fence posts
+        ctx.fillStyle = '#8B4513'; // Brown fence posts
+        for (let i = 0; i < 48; i++) {
+          const angle = (i / 48) * Math.PI * 2;
+          const postX = playaCenterX + Math.cos(angle) * TRASH_FENCE_RADIUS;
+          const postY = playaCenterY + Math.sin(angle) * TRASH_FENCE_RADIUS;
+          
+          // Only draw if on screen
+          if (postX > -10 && postX < canvas.width + 10 && postY > -20 && postY < canvas.height + 20) {
+            ctx.fillRect(postX - 2, postY - 20, 4, 20);
+          }
+        }
+        
+        // Draw the fence wire
+        ctx.strokeStyle = '#C0C0C0'; // Silver wire
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 2]);
+        ctx.beginPath();
+        ctx.arc(playaCenterX, playaCenterY, TRASH_FENCE_RADIUS, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset line dash
+        
+        // Draw "TRASH FENCE" signs
+        ctx.fillStyle = '#FF0000';
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        for (let i = 0; i < 8; i++) {
+          const angle = (i / 8) * Math.PI * 2;
+          const signX = playaCenterX + Math.cos(angle) * (TRASH_FENCE_RADIUS - 30);
+          const signY = playaCenterY + Math.sin(angle) * (TRASH_FENCE_RADIUS - 30);
+          
+          if (signX > -50 && signX < canvas.width + 50 && signY > -10 && signY < canvas.height + 10) {
+            ctx.fillText('TRASH FENCE', signX, signY);
+          }
+        }
+      }
+    }
+
+    function draw() {
+      // Clear canvas with dynamic day/night background
+      const backgroundColor = getDayNightBackgroundColor();
+      ctx.fillStyle = backgroundColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw decorations
+      drawDecorations();
+      
+      // Draw collectibles
+      drawCoins();
+      drawWaterBottles();
+      drawSnacks();
+      
+      // Draw art cars
+      drawBikes();
+      drawArtCars();
+      drawMoop();
+      drawDrugs();
+      drawSpecialLocations();
+      
+      // Draw Man and Temple structures
+      drawMan();
+      drawTemple();
+      
+      // Draw the circle around the Man
+      drawManCircle();
+      
+      // Draw the trash fence
+      drawTrashFence();
+      
+      // Draw wombat
+      drawWombat(player.worldX, player.worldY, player.w, player.h);
+      
+      // Add some playa dust particles
+      for (let i = 0; i < 30; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.3})`;
+        ctx.fillRect(x, y, 1, 1);
+      }
+      
+      // Add hallucination effects if player is under drug influence
+      const hasHallucinations = player.drugEffects.activeDrugs.some(drug => drug.hallucinating);
+      if (hasHallucinations) {
+        drawHallucinations();
+      }
+      
+      // Add day/night visual effects
+      drawDayNightCycle();
+    }
+    
+    function drawDayNightCycle() {
+      const hour = player.time.hour;
+      
+      // Add stars during night time (when background is dark)
+      const isNight = hour >= 18 || hour < 6;
+      if (isNight) {
+        drawStars();
+      }
+    }
+    
+    function drawStars() {
+      // Simple star field
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      
+      // Use time-based seed for consistent stars
+      const time = Math.floor(player.time.day * 24 + player.time.hour);
+      
+      for (let i = 0; i < 50; i++) {
+        // Use time-based pseudo-random positioning
+        const x = ((time + i * 7) * 17) % canvas.width;
+        const y = ((time + i * 11) * 23) % canvas.height;
+        const size = ((time + i * 13) % 3) + 1;
+        
+        ctx.fillRect(x, y, size, size);
+      }
+      ctx.restore();
+    }
+
+    function drawHallucinations() {
+      // Color shifting effect
+      ctx.save();
+      ctx.globalAlpha = 0.3;
+      
+      // Rainbow overlay
+      const time = Date.now() * 0.001;
+      for (let i = 0; i < 5; i++) {
+        const hue = (time * 50 + i * 72) % 360;
+        ctx.fillStyle = `hsla(${hue}, 70%, 50%, 0.1)`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      
+      // Floating geometric shapes
+      for (let i = 0; i < 8; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const size = Math.random() * 20 + 10;
+        const hue = (time * 100 + i * 45) % 360;
+        
+        ctx.fillStyle = `hsla(${hue}, 80%, 60%, 0.4)`;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      // Wavy lines
+      ctx.strokeStyle = `hsla(${(time * 80) % 360}, 90%, 70%, 0.6)`;
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        for (let x = 0; x < canvas.width; x += 10) {
+          const y = canvas.height/2 + Math.sin((x * 0.01) + time + i) * 50;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      
+      ctx.restore();
+    }
+
+    function loop() {
+      if (!gamePaused) {
+        update();
+      }
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    // Use event delegation for all action buttons
+    document.addEventListener('click', (e) => {
+      console.log('Click detected on:', e.target);
+      console.log('Has data-action:', e.target.hasAttribute('data-action'));
+      console.log('Button text:', e.target.textContent);
+      console.log('Button visible:', e.target.offsetParent !== null);
+      console.log('Button ID:', e.target.id);
+      console.log('Current ridingBike:', ridingBike);
+      console.log('Current ridingArtCar:', ridingArtCar);
+      console.log('Current nearbyBike:', nearbyBike);
+      console.log('Current nearbyArtCar:', nearbyArtCar);
+      
+      if (e.target.hasAttribute('data-action')) {
+        const action = e.target.getAttribute('data-action');
+        console.log('Button clicked:', action);
+        if (actions[action]) {
+          console.log('Executing action:', action);
+          actions[action]();
+        } else {
+          console.log('No action found for:', action);
+        }
+      }
+    });
+    
+    // Intro screen functionality
+    const startGameBtn = document.getElementById('start-game-btn');
+    const introScreen = document.getElementById('intro-screen');
+    const gameContainer = document.getElementById('game-container');
+    
+    if (startGameBtn && introScreen && gameContainer) {
+      startGameBtn.addEventListener('click', () => {
+        introScreen.style.display = 'none';
+        gameContainer.style.display = 'block';
+        
+        // Initialize displays after intro screen is hidden
+        updateStatsDisplay();
+        updateLiveActivities();
+        updateTimeDisplay();
+        updateInventoryDisplay();
+        updateDrugEffectsDisplay();
+        
+        // Start the game loop
+        loop();
+      });
+    }
+
+    // Pause button functionality
+    const pauseBtn = document.getElementById('pause-btn');
+    if (pauseBtn) {
+      pauseBtn.addEventListener('click', () => {
+        gamePaused = !gamePaused;
+        pauseBtn.classList.toggle('paused', gamePaused);
+        console.log('Game paused:', gamePaused);
+      });
+    }
+    
+    if (!startGameBtn || !introScreen || !gameContainer) {
+      // Fallback if intro elements aren't found - show game immediately
+      console.log('Intro screen elements not found, showing game immediately');
+      if (gameContainer) gameContainer.style.display = 'block';
+      
+      // Initialize displays
+      updateStatsDisplay();
+      updateTimeDisplay();
+      updateInventoryDisplay();
+      updateDrugEffectsDisplay();
+      
+      // Start the game loop
+      loop();
+    }
+    
+    // Fix button state on window resize
+    window.addEventListener('resize', () => {
+      console.log('Window resized - updating transport buttons');
+      updateTransportButtons();
+    });
+
+    // Debug function to reset time system if it gets stuck
+    window.resetTimeSystem = function() {
+      console.log('Resetting time system...');
+      player.drugEffects.timeStopDuration = 0;
+      player.drugEffects.timeAccumulator = 0;
+      player.drugEffects.activeDrugs = [];
+      lastTimeUpdate = Date.now();
+      updateTimeDisplay();
+      console.log('Time system reset complete');
+    };
+    
+    // Debug function to check time system status
+    window.debugTimeSystem = function() {
+      console.log('=== TIME SYSTEM DEBUG ===');
+      console.log('Current time:', player.time.day, player.time.hour, player.time.minute);
+      console.log('Active drugs:', player.drugEffects.activeDrugs.length);
+      player.drugEffects.activeDrugs.forEach((drug, i) => {
+        console.log(`Drug ${i}: ${drug.type}, timeMultiplier: ${drug.timeMultiplier}, duration: ${drug.duration}`);
+      });
+      
+      let timeMultiplier = 1.0;
+      player.drugEffects.activeDrugs.forEach(drug => {
+        if (drug.timeMultiplier !== undefined && drug.timeMultiplier !== 0) {
+          timeMultiplier *= drug.timeMultiplier;
+        }
+      });
+      
+      if (player.drugEffects.timeStopDuration > 0) {
+        timeMultiplier = 0;
+      }
+      
+      console.log('Total time multiplier:', timeMultiplier);
+      console.log('Time stop duration:', player.drugEffects.timeStopDuration);
+      console.log('Time accumulator:', player.drugEffects.timeAccumulator);
+      console.log('Last time update:', new Date(lastTimeUpdate));
+      console.log('========================');
+    };
+    
+    // Initialize immediately
+    resizeCanvas(); // Make sure canvas is properly sized
+    // Game loop will be started from intro screen button
+  </script>
+</body>
+</html>
