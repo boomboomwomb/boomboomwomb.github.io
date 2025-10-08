@@ -107,11 +107,11 @@ transition: 1s;
 .headshot {
   padding:0px;
 }
-.burn0 {background-image: url("https://boomboomwomb.fun/img/icons/virgin.png");}
-.burn1 {background-image: url("https://boomboomwomb.fun/img/icons/1burn.png");}
-.burn2 {background-image: url("https://boomboomwomb.fun/img/icons/2burn.png");}
-.burn3 {background-image: url("https://boomboomwomb.fun/img/icons/3burn.png");}
-.burn4 {background-image: url("https://boomboomwomb.fun/img/icons/4burn.png");}
+.burn0 {background-image: url("../img/icons/virgin.png");}
+.burn1 {background-image: url("../img/icons/1burn.png");}
+.burn2 {background-image: url("../img/icons/2burn.png");}
+.burn3 {background-image: url("../img/icons/3burn.png");}
+.burn4 {background-image: url("../img/icons/4burn.png");}
 
 
 .burn-count{
@@ -133,16 +133,16 @@ transition: 1s;
   top: 80px;
 }
 
-.art-icon {background-image: url("https://boomboomwomb.fun/img/icons/art.png");}
-.build-icon {background-image: url("https://boomboomwomb.fun/img/icons/build.png");}
-.doulas-icon {background-image: url("https://boomboomwomb.fun/img/icons/doulas.png");}
-.events-icon {background-image: url("https://boomboomwomb.fun/img/icons/events.png");}
-.food-icon {background-image: url("https://boomboomwomb.fun/img/icons/food.png");}
-.interior-icon {background-image: url("https://boomboomwomb.fun/img/icons/interior.png");}
-.lnt-icon {background-image: url("https://boomboomwomb.fun/img/icons/lnt.png");}
-.moms-icon {background-image: url("https://boomboomwomb.fun/img/icons/moms.png");}
-.power-icon {background-image: url("https://boomboomwomb.fun/img/icons/power.png");}
-.wellness-icon {background-image: url("https://boomboomwomb.fun/img/icons/wellness.png");}
+.art-icon {background-image: url("../img/icons/art.png");}
+.build-icon {background-image: url("../img/icons/build.png");}
+.doulas-icon {background-image: url("../img/icons/doulas.png");}
+.events-icon {background-image: url("../img/icons/events.png");}
+.food-icon {background-image: url("../img/icons/food.png");}
+.interior-icon {background-image: url("../img/icons/interior.png");}
+.lnt-icon {background-image: url("../img/icons/lnt.png");}
+.moms-icon {background-image: url("../img/icons/moms.png");}
+.power-icon {background-image: url("../img/icons/power.png");}
+.wellness-icon {background-image: url("../img/icons/wellness.png");}
 
 
 
@@ -162,7 +162,7 @@ transition: 1s;
   margin: 5px;
   border-radius: 70px;
 /* background: rgba(239, 176, 138, 1); 
-  background-image: url("https://boomboomwomb.fun/img/baby.png");
+  background-image: url("../img/baby.png");
 */  background-size: 140%;
   background-position: -20px;
 }
